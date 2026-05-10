@@ -1,0 +1,24 @@
+{
+  "name": "mern-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:backend": "yarn --cwd backend dev",
+    "dev:frontend": "yarn --cwd frontend dev",
+    "dev": "concurrently \"yarn dev:backend\" \"yarn dev:frontend\"",
+    "install:all": "yarn --cwd backend install && yarn --cwd frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "main": "index.js",
+  "repository": "https://github.com/MarvinVS11/Explore-WebPage.git",
+  "author": "MarvinVS11 <marvi11@hotmail.es>",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.2"
+  }
+}
