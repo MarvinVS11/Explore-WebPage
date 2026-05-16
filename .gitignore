@@ -1,1 +1,10 @@
 node_modules/
+
+# Variables de entorno — NUNCA al repositorio
+.env
+.env.local
+.env.production
+
+# Imágenes subidas
+uploads/*
+!uploads/.gitkeep
