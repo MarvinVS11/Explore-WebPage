@@ -1,13 +1,17 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const SectionSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  content: { type: String },
-  order: { type: Number, default: 0 },
-  isActive: { type: Boolean, default: true },
-  images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Image' }],
-  createdAt: { type: Date, default: Date.now },
-});
+const sectionSchema = new Schema(
+  {
+    key:       { type: String, required: true, unique: true },
+    title:     { type: String, default: '' },
+    subtitle:  { type: String, default: '' },
+    body:      { type: String, default: '' },
+    ctaText:   { type: String, default: '' },
+    ctaLink:   { type: String, default: '' },
+    isVisible: { type: Boolean, default: true },
+    extraData: { type: Schema.Types.Mixed, default: {} },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Section', SectionSchema);
+module.exports = model('Section', sectionSchema);

@@ -1,4 +1,5 @@
-require('dotenv').config({ path: '../../.env' });
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const mongoose    = require('mongoose');
 const SiteConfig  = require('../models/SiteConfig');
 const Section     = require('../models/Section');
@@ -202,7 +203,18 @@ const redItems = [
 // ─── Runner ───────────────────────────────────────────────────────────────────
 async function runSeed() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI no está definido en el archivo .env');
+    }
+
+    console.log('🔌 Conectando a MongoDB...');
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log('✅ Conectado a MongoDB Atlas');
 
     // Limpiar colecciones antes de insertar

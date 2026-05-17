@@ -1,10 +1,39 @@
-const express = require('express');
-const router = express.Router();
+const router  = require('express').Router();
+const Section = require('../models/Section');
 
-// TODO: Import Section model and add section routes
+// GET /api/sections — obtener todas las secciones
+router.get('/', async (req, res) => {
+  try {
+    const sections = await Section.find({ isVisible: true }).sort({ createdAt: 1 });
+    res.json(sections);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Sections route works' });
+// GET /api/sections/:key — obtener sección por key
+router.get('/:key', async (req, res) => {
+  try {
+    const section = await Section.findOne({ key: req.params.key });
+    if (!section) return res.status(404).json({ error: 'Sección no encontrada.' });
+    res.json(section);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/sections/:key — actualizar o crear sección
+router.put('/:key', async (req, res) => {
+  try {
+    const section = await Section.findOneAndUpdate(
+      { key: req.params.key },
+      { ...req.body, key: req.params.key },
+      { new: true, upsert: true, runValidators: true }
+    );
+    res.json(section);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

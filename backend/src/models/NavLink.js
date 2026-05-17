@@ -1,12 +1,13 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const NavLinkSchema = new mongoose.Schema({
-  label: { type: String, required: true },
-  href: { type: String, required: true },
-  order: { type: Number, default: 0 },
-  target: { type: String, default: '_self' },
-  isExternal: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-});
+const navLinkSchema = new Schema(
+  {
+    label:    { type: String, required: true },
+    href:     { type: String, required: true },
+    order:    { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('NavLink', NavLinkSchema);
+module.exports = model('NavLink', navLinkSchema);

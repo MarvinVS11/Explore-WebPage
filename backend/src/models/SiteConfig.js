@@ -1,18 +1,21 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const SiteConfigSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  subtitle: { type: String },
-  logo: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
-  heroImage: { type: mongoose.Schema.Types.ObjectId, ref: 'Image' },
-  sections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Section' }],
-  navLinks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'NavLink' }],
-  redItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RedItem' }],
-  metadata: {
-    description: { type: String },
-    keywords: [{ type: String }],
+const siteConfigSchema = new Schema(
+  {
+    key:             { type: String, required: true, unique: true },
+    siteName:        { type: String, default: '' },
+    logoUrl:         { type: String, default: '' },
+    faviconUrl:      { type: String, default: '' },
+    videoUrl:        { type: String, default: '' },
+    whatsappUrl:     { type: String, default: '' },
+    facebookUrl:     { type: String, default: '' },
+    instagramUrl:    { type: String, default: '' },
+    whatsappImgUrl:  { type: String, default: '' },
+    facebookImgUrl:  { type: String, default: '' },
+    instagramImgUrl: { type: String, default: '' },
+    footerCopyright: { type: String, default: '' },
   },
-  updatedAt: { type: Date, default: Date.now },
-});
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('SiteConfig', SiteConfigSchema);
+module.exports = model('SiteConfig', siteConfigSchema);
