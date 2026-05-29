@@ -1,7 +1,24 @@
-import React from 'react';
+import { getImageUrl } from '../api';
 
-const DinamicImage = ({ src, alt, className }) => {
-  return <img src={src} alt={alt || 'Imagen'} className={className} />;
-};
-
-export default DinamicImage;
+export default function DynamicImage({
+  src,
+  alt       = '',
+  fallback  = '/images/placeholder.webp',
+  className = '',
+  style     = {},
+}) {
+  return (
+    <img
+      src={src ? getImageUrl(src) : fallback}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      className={className}
+      style={style}
+      onError={(e) => {
+        e.target.onerror = null; // evita loop infinito
+        e.target.src = fallback;
+      }}
+    />
+  );
+}

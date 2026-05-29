@@ -43,11 +43,15 @@
 
 require('dotenv').config(); // SIEMPRE primera línea antes de todo
 
+const dns       = require('dns');
 const express   = require('express');
 const cors      = require('cors');
 const path      = require('path');
 const fs        = require('fs');
 const connectDB = require('./config/db');
+
+// Forzar servidores DNS para resolver registros SRV de MongoDB Atlas
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
@@ -66,6 +70,7 @@ if (!fs.existsSync(uploadsDir)) {
 app.use(cors({
   origin: [
     'http://localhost:5173', // Vite dev server
+    'http://localhost:5174', // Vite may auto-pick the next free port
     'http://localhost:3000', // por si usás otro puerto
   ],
   methods:     ['GET', 'POST', 'PUT', 'DELETE'],

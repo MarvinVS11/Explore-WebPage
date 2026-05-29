@@ -1,9 +1,14 @@
-import React from 'react';
-
-const Skeleton = ({ width = '100%', height = '1rem' }) => {
+export default function Skeleton({ height = '1rem', width = '100%', borderRadius = '6px' }) {
   return (
-    <div className="skeleton" style={{ width, height, backgroundColor: '#e0e0e0', borderRadius: '4px' }} />
+    <div
+      style={{
+        height,
+        width,
+        borderRadius,
+        background: 'linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%)',
+        backgroundSize: '200% 100%',
+        animation: 'shimmer 1.5s infinite',
+      }}
+    />
   );
-};
-
-export default Skeleton;
+}
