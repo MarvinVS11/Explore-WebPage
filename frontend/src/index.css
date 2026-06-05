@@ -400,8 +400,9 @@ p {
 
 .nosotros-img img {
   width:      100%;
-  height:     260px;
-  object-fit: contain;
+  height:     auto;
+  max-height: 340px;
+  object-fit: cover;
   padding:    1.5rem;
   background: var(--verde-light);
 }

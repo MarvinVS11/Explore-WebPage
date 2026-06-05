@@ -8,22 +8,45 @@
 //   password: 'password',
 // };
 
+const dns = require('dns');
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      // Opciones recomendadas para evitar warnings
-      serverSelectionTimeoutMS: 5000, // timeout si no encuentra el servidor
-      socketTimeoutMS: 45000,         // timeout de operaciones
-    });
+// Usar DNS públicos para que MongoDB Atlas resuelva los registros SRV correctamente
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 
+const connectDB = async () => {
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    console.error(' MONGO_URI no está definida. Verificá backend/.env');
+    process.exit(1);
+  }
+
+  const mainOptions = {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  };
+
+  try {
+    const conn = await mongoose.connect(uri, mainOptions);
     console.log(`MongoDB conectado: ${conn.connection.host}`);
     console.log(` Base de datos: ${conn.connection.name}`);
-
+    return;
   } catch (error) {
     console.error(` Error de conexión: ${error.message}`);
-    process.exit(1); // detiene el servidor si no hay conexión
+
+    if (process.env.MONGO_URI_FALLBACK && process.env.MONGO_URI_FALLBACK !== uri) {
+      console.warn(' Intentando fallback a Mongo local...');
+      try {
+        const conn = await mongoose.connect(process.env.MONGO_URI_FALLBACK, mainOptions);
+        console.log(`MongoDB fallback conectado: ${conn.connection.host}`);
+        console.log(` Base de datos: ${conn.connection.name}`);
+        return;
+      } catch (fallbackError) {
+        console.error(` Error en fallback: ${fallbackError.message}`);
+      }
+    }
+
+    process.exit(1);
   }
 };
 

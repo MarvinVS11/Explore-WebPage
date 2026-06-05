@@ -1,6 +1,7 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 const mongoose   = require('mongoose');
+const connectDB  = require('../config/db');
 const SiteConfig = require('../models/SiteConfig');
 const Section    = require('../models/Section');
 const Image      = require('../models/Image');
@@ -47,7 +48,7 @@ const sections = [
     key:       'nosotros',
     title:     'Nosotros',
     subtitle:  '',
-    body:      'Explore Occidente Costa Rica es una plataforma de la Fundación Bosque Nuboso de Occidente, que busca apoyar la consolidación de emprendimientos turísticos de la región de Occidente, a través del mercadeo digital, capacitación y operación turística.',
+    body:      'Explore Occidente Costa  es una plataforma de la Fundación Bosque Nuboso de Occidente, que busca apoyar la consolidación de emprendimientos turísticos de la región de Occidente, a través del mercadeo digital, capacitación y operación turística.',
     ctaText:   'Visitar Fundación',
     ctaLink:   'http://bosquenuboso.org/',
     isVisible: true,
@@ -151,7 +152,7 @@ const redItems = [
 
 // ─── Runner ───────────────────────────────────────────────────
 
-async function runSeed() {
+async function seedDatabase() {
   try {
     console.log('Conectando a MongoDB Atlas...');
     console.log('URI:', process.env.MONGO_URI ? '✅ Encontrada' : '❌ No encontrada — verificá el .env');
@@ -160,7 +161,13 @@ async function runSeed() {
       throw new Error('MONGO_URI no está definida. Verificá el archivo backend/.env');
     }
 
-    await mongoose.connect(process.env.MONGO_URI);
+    // Safety: refuse to run a destructive seed in production unless explicitly allowed
+    if (process.env.NODE_ENV === 'production' && process.env.FORCE_SEED !== 'true') {
+      console.error('Seeding en producción está deshabilitado por seguridad. Establecé FORCE_SEED=true para forzar.');
+      return;
+    }
+
+    await connectDB();
     console.log('✅ Conectado a MongoDB Atlas');
 
     await Promise.all([
@@ -185,11 +192,36 @@ async function runSeed() {
     console.log(`   • NavLinks   : ${navLinks.length} documentos`);
     console.log(`   • RedItems   : ${redItems.length} documentos`);
 
-    process.exit(0);
+    return;
   } catch (err) {
     console.error('❌ Error en seed:', err.message);
-    process.exit(1);
+    throw err;
   }
 }
 
-runSeed();
+async function seedIfEmpty() {
+  const [siteConfigCount, sectionCount, imageCount, navLinkCount, redItemCount] = await Promise.all([
+    SiteConfig.countDocuments(),
+    Section.countDocuments(),
+    Image.countDocuments(),
+    NavLink.countDocuments(),
+    RedItem.countDocuments(),
+  ]);
+
+  if (siteConfigCount > 0 && sectionCount > 0 && imageCount > 0 && navLinkCount > 0 && redItemCount > 0) {
+    return false;
+  }
+
+  console.log('Base de datos vacía o incompleta. Ejecutando seed inicial...');
+  await seedDatabase();
+  return true;
+}
+
+if (require.main === module) {
+  seedDatabase().catch((err) => {
+    console.error('❌ Error en seed:', err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = { seedIfEmpty };

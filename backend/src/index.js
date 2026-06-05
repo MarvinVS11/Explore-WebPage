@@ -55,16 +55,32 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
+const uploadsDir = path.join(__dirname, '../uploads');
 
 // ─── Conexión a MongoDB ───────────────────────────────────────────────────────
-connectDB();
+const { seedIfEmpty } = require('./seeds/seed');
 
-// ─── Crear carpeta uploads si no existe ──────────────────────────────────────
-const uploadsDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log('📁 Carpeta uploads creada');
-}
+const startServer = async () => {
+  await connectDB();
+
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('📁 Carpeta uploads creada');
+  }
+
+  await seedIfEmpty();
+
+  app.listen(PORT, () => {
+    console.log(`🌐 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`📂 Archivos estáticos en http://localhost:${PORT}/uploads`);
+    console.log(`❤️  Health check en http://localhost:${PORT}/health`);
+  });
+};
+
+startServer().catch((err) => {
+  console.error('❌ Error al iniciar el servidor:', err.message);
+  process.exit(1);
+});
 
 // ─── Middlewares ──────────────────────────────────────────────────────────────
 app.use(cors({
@@ -129,9 +145,3 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error interno del servidor.' });
 });
 
-// ─── Iniciar servidor ─────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🌐 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📂 Archivos estáticos en http://localhost:${PORT}/uploads`);
-  console.log(`❤️  Health check en http://localhost:${PORT}/health`);
-});

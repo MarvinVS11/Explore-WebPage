@@ -3,8 +3,16 @@ import useSiteConfig from '../hooks/useSiteConfig';
 import { getImageUrl } from '../api';
 
 export default function Navbar() {
-  const { config, navLinks, loading } = useSiteConfig();
+  const { config } = useSiteConfig();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuItems = [
+    { label: 'Inicio', href: '#inicio' },
+    { label: 'Nosotros', href: '#nosotros' },
+    { label: 'Red de Turismo', href: '#redturismo' },
+    { label: 'Mapa Turístico', href: '#turisteando' },
+    { label: 'Contacto', href: '#contacto' },
+  ];
 
   return (
     <nav className="navbar">
@@ -20,16 +28,13 @@ export default function Navbar() {
 
         {/* Links escritorio */}
         <ul className="navbar-links">
-          {loading
-            ? [1,2,3,4,5].map(i => <li key={i}><div className="nav-skeleton" /></li>)
-            : navLinks.map(link => (
-                <li key={link._id}>
-                  <a href={link.href} onClick={() => setMenuOpen(false)}>
-                    {link.label}
-                  </a>
-                </li>
-              ))
-          }
+          {menuItems.map((item) => (
+            <li key={item.href}>
+              <a href={item.href} onClick={() => setMenuOpen(false)}>
+                {item.label}
+              </a>
+            </li>
+          ))}
         </ul>
 
         {/* Botón hamburguesa — solo móvil */}
@@ -46,10 +51,10 @@ export default function Navbar() {
 
       {/* Menú móvil desplegable */}
       <ul className={`navbar-mobile ${menuOpen ? 'active' : ''}`}>
-        {navLinks.map(link => (
-          <li key={link._id}>
-            <a href={link.href} onClick={() => setMenuOpen(false)}>
-              {link.label}
+        {menuItems.map((item) => (
+          <li key={item.href}>
+            <a href={item.href} onClick={() => setMenuOpen(false)}>
+              {item.label}
             </a>
           </li>
         ))}
