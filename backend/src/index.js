@@ -63,10 +63,14 @@ const { seedIfEmpty } = require('./seeds/seed');
 const startServer = async () => {
   await connectDB();
 
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-    console.log('📁 Carpeta uploads creada');
-  }
+  // Crear uploads y sus subcarpetas si no existen
+  ['', '/images', '/video'].forEach(sub => {
+    const dir = path.join(uploadsDir, sub);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`📁 Carpeta creada: uploads${sub || '/'}`);
+    }
+  });
 
   await seedIfEmpty();
 
@@ -96,8 +100,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ─── Archivos estáticos — imágenes subidas ────────────────────────────────────
+// ─── Archivos estáticos ───────────────────────────────────────────────────────
 app.use('/uploads', express.static(uploadsDir));
+app.use('/images',  express.static(path.join(uploadsDir, 'images')));
+app.use('/video',   express.static(path.join(uploadsDir, 'video')));
 
 // ─── Rutas de la API ──────────────────────────────────────────────────────────
 app.use('/api',          require('./routes/index'));

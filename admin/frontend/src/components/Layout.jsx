@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 
 export default function Layout() {
-  const navigate = useNavigate();
-  const email    = localStorage.getItem('admin_email') || 'Admin';
+  const navigate       = useNavigate();
+  const email          = localStorage.getItem('admin_email') || 'Admin';
+  const [open, setOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem('admin_token');
@@ -11,15 +13,35 @@ export default function Layout() {
   };
 
   const navItems = [
-    { to: '/sections',  label: '📝 Secciones' },
-    { to: '/config',    label: '⚙️ Configuración' },
-    { to: '/navlinks',  label: '🔗 Menú' },
-    { to: '/reditems',  label: '🌿 Red de Turismo' },
+    { to: '/sections', label: '📝 Secciones' },
+    { to: '/images',   label: '🖼️ Imágenes' },
+    { to: '/config',   label: '⚙️ Configuración' },
+    { to: '/navlinks', label: '🔗 Menú' },
+    { to: '/reditems', label: '🌿 Red de Turismo' },
   ];
 
   return (
     <div className="admin-layout">
-      <aside className="sidebar">
+
+      {/* ── Topbar — solo visible en móvil ──────────── */}
+      <header className="admin-topbar">
+        <button
+          className="admin-hamburger"
+          onClick={() => setOpen(o => !o)}
+          aria-label="Abrir menú"
+        >
+          <span /><span /><span />
+        </button>
+        <span className="admin-topbar-title">Explore Admin</span>
+      </header>
+
+      {/* ── Overlay para cerrar el sidebar ──────────── */}
+      {open && (
+        <div className="sidebar-overlay" onClick={() => setOpen(false)} />
+      )}
+
+      {/* ── Sidebar ──────────────────────────────────── */}
+      <aside className={`sidebar${open ? ' sidebar--open' : ''}`}>
         <div className="sidebar-brand">
           <span>🌐</span>
           <span>Explore Admin</span>
@@ -29,6 +51,7 @@ export default function Layout() {
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 'sidebar-link' + (isActive ? ' active' : '')
               }
@@ -43,9 +66,11 @@ export default function Layout() {
         </div>
       </aside>
 
+      {/* ── Contenido principal ───────────────────────── */}
       <main className="admin-content">
         <Outlet />
       </main>
+
     </div>
   );
 }

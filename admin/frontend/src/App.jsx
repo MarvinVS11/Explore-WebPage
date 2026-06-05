@@ -4,6 +4,7 @@ import SectionsPage  from './pages/SectionsPage';
 import ConfigPage    from './pages/ConfigPage';
 import NavLinksPage  from './pages/NavLinksPage';
 import RedItemsPage  from './pages/RedItemsPage';
+import ImagesPage    from './pages/ImagesPage';
 import Layout        from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="config"   element={<ConfigPage />} />
           <Route path="navlinks" element={<NavLinksPage />} />
           <Route path="reditems" element={<RedItemsPage />} />
+          <Route path="images"   element={<ImagesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

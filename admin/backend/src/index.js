@@ -38,6 +38,7 @@ app.use('/api/sections', require('./routes/sections'));
 app.use('/api/config',   require('./routes/config'));
 app.use('/api/navlinks', require('./routes/navlinks'));
 app.use('/api/reditems', require('./routes/reditems'));
+app.use('/api/images',   require('./routes/images'));
 app.use('/upload',       require('./routes/upload'));
 
 app.get('/health', (_, res) =>

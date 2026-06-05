@@ -3,6 +3,20 @@ import useSiteConfig from '../hooks/useSiteConfig';
 import { getImageUrl } from '../api';
 import Skeleton from './Skeleton';
 
+function HeroTitle({ title }) {
+  if (!title) return null;
+  const words = title.split(' ');
+  if (words.length <= 2) return <h1>{title}</h1>;
+  const line1 = words.slice(0, -2).join(' ');
+  const line2 = words.slice(-2).join(' ');
+  return (
+    <h1>
+      <span>{line1}</span>
+      <span className="hero-title-2">{line2}</span>
+    </h1>
+  );
+}
+
 export default function Hero() {
   const { data, images, loading } = useSection('hero');
   const { config } = useSiteConfig();
@@ -39,7 +53,7 @@ export default function Hero() {
       {config?.videoUrl && (
         <video
           className="hero-video"
-          src={config.videoUrl}
+          src={getImageUrl(config.videoUrl)}
           autoPlay
           muted
           loop
@@ -53,7 +67,7 @@ export default function Hero() {
         {data?.subtitle && (
           <span className="hero-badge">{data.subtitle}</span>
         )}
-        <h1>{data?.title}</h1>
+        <HeroTitle title={data?.title} />
         <p>{data?.body}</p>
         {data?.ctaText && (
           <a href={data.ctaLink || '#red'} className="btn-primary">

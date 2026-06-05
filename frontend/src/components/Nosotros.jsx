@@ -5,7 +5,9 @@ import Skeleton from './Skeleton';
 export default function Nosotros() {
   const { data, images, loading } = useSection('nosotros');
 
-  const logo = images.find((img) => img.role === 'logo');
+  const logo    = images.find(img => img.role === 'logo' && img.isActive !== false);
+  const galeria = images.filter(img => img.role === 'galeria' && img.isActive !== false)
+                        .sort((a, b) => a.order - b.order);
 
   if (loading) {
     return (
@@ -54,6 +56,20 @@ export default function Nosotros() {
         </div>
 
       </div>
+
+      {galeria.length > 0 && (
+        <div className="nosotros-galeria">
+          {galeria.map(img => (
+            <div key={img._id} className="nosotros-galeria-item">
+              <DynamicImage
+                src={img.url}
+                alt={img.alt || ''}
+                className="nosotros-galeria-img"
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

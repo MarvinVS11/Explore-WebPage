@@ -57,6 +57,16 @@ export const uploadFile = async (file, type = 'image') => {
   return data;
 };
 
+// ─── Images ───────────────────────────────────────────────────────
+export const getImages     = (section) =>
+  request(`/api/images${section ? `?section=${section}` : ''}`);
+export const createImage   = (body)    =>
+  request('/api/images', { method: 'POST', body: JSON.stringify(body) });
+export const updateImage   = (id, body) =>
+  request(`/api/images/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteImage   = (id)      =>
+  request(`/api/images/${id}`, { method: 'DELETE' });
+
 // ─── RedItems ─────────────────────────────────────────────────────
 export const getRedItems    = ()        => request('/api/reditems');
 export const createRedItem  = (body)    =>

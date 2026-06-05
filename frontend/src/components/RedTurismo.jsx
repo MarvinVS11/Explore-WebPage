@@ -1,10 +1,15 @@
 import useSection from '../hooks/useSection';
 import useSiteConfig from '../hooks/useSiteConfig';
+import DynamicImage from './DinamicImage';
 import Skeleton from './Skeleton';
 
 export default function RedTurismo() {
-  const { data, loading } = useSection('red');
-  const { redItems, loading: loadingItems } = useSiteConfig();
+  const { data, images, loading }             = useSection('red');
+  const { redItems, loading: loadingItems }   = useSiteConfig();
+
+  const galeria = images
+    .filter(img => img.isActive !== false)
+    .sort((a, b) => a.order - b.order);
 
   if (loading || loadingItems) {
     return (
@@ -29,6 +34,20 @@ export default function RedTurismo() {
         <h2>{data?.title}</h2>
         <p>{data?.body}</p>
       </div>
+
+      {galeria.length > 0 && (
+        <div className="red-galeria">
+          {galeria.map(img => (
+            <div key={img._id} className="red-galeria-item">
+              <DynamicImage
+                src={img.url}
+                alt={img.alt || ''}
+                className="red-galeria-img"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="red-grid">
         {redItems.map((item) => (
