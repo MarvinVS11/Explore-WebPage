@@ -22,31 +22,17 @@ const connectDB = async () => {
   }
 
   const mainOptions = {
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
   };
 
   try {
     const conn = await mongoose.connect(uri, mainOptions);
-    console.log(`MongoDB conectado: ${conn.connection.host}`);
-    console.log(` Base de datos: ${conn.connection.name}`);
+    console.log(`MongoDB conectado: ${conn.connection.name}`);
     return;
   } catch (error) {
-    console.error(` Error de conexión: ${error.message}`);
-
-    if (process.env.MONGO_URI_FALLBACK && process.env.MONGO_URI_FALLBACK !== uri) {
-      console.warn(' Intentando fallback a Mongo local...');
-      try {
-        const conn = await mongoose.connect(process.env.MONGO_URI_FALLBACK, mainOptions);
-        console.log(`MongoDB fallback conectado: ${conn.connection.host}`);
-        console.log(` Base de datos: ${conn.connection.name}`);
-        return;
-      } catch (fallbackError) {
-        console.error(` Error en fallback: ${fallbackError.message}`);
-      }
-    }
-
-    process.exit(1);
+    console.error(`Error de conexión: ${error.message}`);
+    throw error;
   }
 };
 

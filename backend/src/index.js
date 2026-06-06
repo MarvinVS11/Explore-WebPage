@@ -12,12 +12,16 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
-// ─── Conexión a MongoDB ───────────────────────────────────────────────────────
+// ─── Conexión a MongoDB con caché (patrón para serverless) ───────────────────
 const { seedIfEmpty } = require('./seeds/seed');
 
-connectDB()
-  .then(() => seedIfEmpty())
-  .catch(err => console.error('❌ Error de base de datos:', err.message));
+let dbPromise = null;
+function ensureDB() {
+  if (!dbPromise) {
+    dbPromise = connectDB().then(() => seedIfEmpty());
+  }
+  return dbPromise;
+}
 
 // ─── Middlewares ──────────────────────────────────────────────────────────────
 app.use(cors({
@@ -45,6 +49,17 @@ if (!process.env.VERCEL) {
   app.use('/images',  express.static(path.join(uploadsDir, 'images')));
   app.use('/video',   express.static(path.join(uploadsDir, 'video')));
 }
+
+// ─── Middleware: espera conexión a DB antes de cada request ──────────────────
+app.use(async (req, res, next) => {
+  try {
+    await ensureDB();
+    next();
+  } catch (err) {
+    console.error('❌ DB no disponible:', err.message);
+    res.status(503).json({ error: 'Base de datos no disponible' });
+  }
+});
 
 // ─── Rutas de la API ──────────────────────────────────────────────────────────
 app.use('/api',          require('./routes/index'));
