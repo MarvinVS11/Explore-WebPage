@@ -25,12 +25,20 @@ function ensureDB() {
 
 // ─── Middlewares ──────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000',
-    process.env.FRONTEND_URL,
-  ].filter(Boolean),
+  origin: (origin, callback) => {
+    const allowed = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:3000',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+    // Permitir todas las URLs de Vercel (previews de release, staging, etc.)
+    if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS: Origen no permitido'));
+    }
+  },
   methods:     ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
