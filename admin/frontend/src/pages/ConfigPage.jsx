@@ -46,24 +46,47 @@ export default function ConfigPage() {
     }
   };
 
-  const handleVideoUpload = async (e) => {
+  const handleVideoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingVid(true);
-    setVidProgress(`Subiendo ${file.name}...`);
+    setVidProgress('0%');
     setMsg('');
-    try {
-      const { url } = await uploadFile(file, 'video');
-      setForm(prev => ({ ...prev, videoUrl: url }));
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'nezf1ovv');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/diuqs187g/video/upload');
+
+    xhr.upload.onprogress = (ev) => {
+      if (ev.lengthComputable) {
+        setVidProgress(`${Math.round((ev.loaded / ev.total) * 100)}%`);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const result = JSON.parse(xhr.responseText);
+        setForm(prev => ({ ...prev, videoUrl: result.secure_url }));
+        setMsg('✅ Video subido. Guardá los cambios para aplicarlo.');
+      } else {
+        setMsg('❌ Error al subir el video a Cloudinary');
+      }
       setVidProgress('');
-      setMsg('✅ Video subido. Guardá los cambios para aplicarlo.');
-    } catch (err) {
-      setVidProgress('');
-      setMsg('❌ ' + err.message);
-    } finally {
       setUploadingVid(false);
       e.target.value = '';
-    }
+    };
+
+    xhr.onerror = () => {
+      setMsg('❌ Error de conexión al subir el video');
+      setVidProgress('');
+      setUploadingVid(false);
+      e.target.value = '';
+    };
+
+    xhr.send(formData);
   };
 
   const handleLogoUpload = async (e) => {
