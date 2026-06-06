@@ -12,7 +12,7 @@ const ROLE_LABELS = {
   slider:  'Slider / Banner',
 };
 
-const EMPTY_FORM = { url: '', role: 'galeria', alt: '', order: 0, isActive: true };
+const EMPTY_FORM = { url: '', publicId: '', role: 'galeria', alt: '', order: 0, isActive: true };
 
 export default function ImagesPage() {
   const [section,    setSection]    = useState('nosotros');
@@ -50,8 +50,8 @@ export default function ImagesPage() {
     setUploading(true);
     setMsg('');
     try {
-      const { url } = await uploadFile(file, 'image');
-      setForm(prev => ({ ...prev, url }));
+      const { url, publicId } = await uploadFile(file, 'image');
+      setForm(prev => ({ ...prev, url, publicId: publicId || '' }));
     } catch (err) {
       setMsg('❌ ' + err.message);
     } finally {
@@ -85,7 +85,7 @@ export default function ImagesPage() {
 
   const handleEdit = (img) => {
     setEditingId(img._id);
-    setForm({ url: img.url, role: img.role, alt: img.alt || '', order: img.order, isActive: img.isActive });
+    setForm({ url: img.url, publicId: img.publicId || '', role: img.role, alt: img.alt || '', order: img.order, isActive: img.isActive });
     setMsg('');
   };
 

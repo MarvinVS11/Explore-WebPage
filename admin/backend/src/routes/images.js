@@ -1,6 +1,7 @@
-const router = require('express').Router();
-const auth   = require('../middleware/auth');
-const Image  = require('../models/Image');
+const router     = require('express').Router();
+const auth       = require('../middleware/auth');
+const Image      = require('../models/Image');
+const cloudinary = require('../config/cloudinary');
 
 router.use(auth);
 
@@ -45,6 +46,9 @@ router.delete('/:id', async (req, res) => {
   try {
     const image = await Image.findByIdAndDelete(req.params.id);
     if (!image) return res.status(404).json({ error: 'Imagen no encontrada' });
+    if (image.publicId) {
+      await cloudinary.uploader.destroy(image.publicId).catch(() => {});
+    }
     res.json({ message: 'Imagen eliminada' });
   } catch (err) {
     res.status(500).json({ error: err.message });

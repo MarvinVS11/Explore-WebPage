@@ -1,39 +1,51 @@
-const router = require('express').Router();
-const path   = require('path');
-const fs     = require('fs');
-const auth   = require('../middleware/auth');
-const upload = require('../config/multer');
-
-const BASE_URL = process.env.ADMIN_BACKEND_URL || 'http://localhost:5001';
+const router     = require('express').Router();
+const auth       = require('../middleware/auth');
+const upload     = require('../config/multer');
+const cloudinary = require('../config/cloudinary');
 
 router.use(auth);
 
-// POST /upload/image — sube una imagen
-router.post('/image', upload.single('file'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
-  const url = `${BASE_URL}/media/images/${req.file.filename}`;
-  res.json({ url, filename: req.file.filename });
-});
+function uploadToCloudinary(buffer, mimetype, folder) {
+  return new Promise((resolve, reject) => {
+    const resourceType = mimetype.startsWith('video/') ? 'video' : 'image';
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: `explore-occidente/${folder}`, resource_type: resourceType },
+      (error, result) => (error ? reject(error) : resolve(result))
+    );
+    stream.end(buffer);
+  });
+}
 
-// POST /upload/video — sube un video
-router.post('/video', upload.single('file'), (req, res) => {
+// POST /upload/image
+router.post('/image', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
-  const url = `${BASE_URL}/media/video/${req.file.filename}`;
-  res.json({ url, filename: req.file.filename });
-});
-
-// DELETE /upload/:type/:filename — elimina un archivo
-router.delete('/:type/:filename', (req, res) => {
-  const { type, filename } = req.params;
-  if (!['images', 'video'].includes(type)) {
-    return res.status(400).json({ error: 'Tipo inválido' });
+  try {
+    const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, 'images');
+    res.json({ url: result.secure_url, publicId: result.public_id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  const filePath = path.join(__dirname, '../../uploads', type, filename);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+});
+
+// POST /upload/video
+router.post('/video', upload.single('file'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
+  try {
+    const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, 'video');
+    res.json({ url: result.secure_url, publicId: result.public_id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE /upload/:publicId(*) — elimina de Cloudinary
+router.delete('/:publicId(*)', async (req, res) => {
+  const publicId = req.params.publicId;
+  try {
+    await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
     res.json({ message: 'Archivo eliminado' });
-  } else {
-    res.status(404).json({ error: 'Archivo no encontrado' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

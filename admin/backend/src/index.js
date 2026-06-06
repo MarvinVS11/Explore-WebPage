@@ -10,12 +10,14 @@ const PORT = process.env.PORT || 5001;
 
 connectDB();
 
-// Asegurar que existen las carpetas de uploads
-const uploadsDir = path.join(__dirname, '../uploads');
-['images', 'video'].forEach(folder => {
-  const dir = path.join(uploadsDir, folder);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-});
+// Carpetas de uploads solo en local (Vercel no tiene filesystem persistente)
+if (!process.env.VERCEL) {
+  const uploadsDir = path.join(__dirname, '../uploads');
+  ['images', 'video'].forEach(folder => {
+    const dir = path.join(uploadsDir, folder);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  });
+}
 
 app.use(cors({
   origin: [
@@ -27,11 +29,15 @@ app.use(cors({
   methods:     ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
+
 app.use(express.json());
 
-// Servir archivos subidos (imágenes y videos)
-app.use('/media/images', express.static(path.join(uploadsDir, 'images')));
-app.use('/media/video',  express.static(path.join(uploadsDir, 'video')));
+// Servir archivos subidos solo en local (en producción se usan URLs de Cloudinary)
+if (!process.env.VERCEL) {
+  const uploadsDir = path.join(__dirname, '../uploads');
+  app.use('/media/images', express.static(path.join(uploadsDir, 'images')));
+  app.use('/media/video',  express.static(path.join(uploadsDir, 'video')));
+}
 
 app.use('/auth',         require('./routes/auth'));
 app.use('/api/sections', require('./routes/sections'));
@@ -54,6 +60,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-app.listen(PORT, () =>
-  console.log(`🔐 Admin API corriendo en http://localhost:${PORT}`)
-);
+// Solo escucha en local — en Vercel se exporta el app directamente
+if (require.main === module) {
+  app.listen(PORT, () =>
+    console.log(`🔐 Admin API corriendo en http://localhost:${PORT}`)
+  );
+}
+
+module.exports = app;
