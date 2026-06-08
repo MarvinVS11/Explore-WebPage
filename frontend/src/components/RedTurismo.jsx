@@ -28,9 +28,8 @@ export default function RedTurismo() {
   }
 
   return (
-    <section id="redturismo" className="red-turismo">
+    <section id="redturismo" className="red-turismo section-reveal">
       <div className="section-header">
-        <span className="section-label">Red de Turismo Sostenible</span>
         <h2>{data?.title}</h2>
         <p>{data?.body}</p>
       </div>

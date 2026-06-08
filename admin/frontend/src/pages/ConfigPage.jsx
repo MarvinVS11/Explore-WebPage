@@ -3,15 +3,14 @@ import { getConfig, updateConfig, uploadFile } from '../api';
 
 const TEXT_FIELDS = [
   { key: 'siteName',        label: 'Nombre del sitio' },
-  { key: 'logoUrl',         label: 'URL del logo' },
   { key: 'faviconUrl',      label: 'URL del favicon' },
-  { key: 'whatsappUrl',     label: 'Link de WhatsApp' },
-  { key: 'facebookUrl',     label: 'Link de Facebook' },
-  { key: 'instagramUrl',    label: 'Link de Instagram' },
-  { key: 'whatsappImgUrl',  label: 'Imagen ícono WhatsApp' },
-  { key: 'facebookImgUrl',  label: 'Imagen ícono Facebook' },
-  { key: 'instagramImgUrl', label: 'Imagen ícono Instagram' },
   { key: 'footerCopyright', label: 'Texto de copyright' },
+];
+
+const SOCIAL_FIELDS = [
+  { key: 'whatsapp',  label: 'WhatsApp',  urlKey: 'whatsappUrl',     imgKey: 'whatsappImgUrl',  emoji: '💬' },
+  { key: 'facebook',  label: 'Facebook',  urlKey: 'facebookUrl',     imgKey: 'facebookImgUrl',  emoji: '📘' },
+  { key: 'instagram', label: 'Instagram', urlKey: 'instagramUrl',    imgKey: 'instagramImgUrl', emoji: '📷' },
 ];
 
 export default function ConfigPage() {
@@ -22,9 +21,11 @@ export default function ConfigPage() {
   const [uploadingImg, setUploadingImg] = useState(false);
   const [uploadingVid, setUploadingVid] = useState(false);
   const [vidProgress,  setVidProgress]  = useState('');
+  const [uploadingSocial, setUploadingSocial] = useState({});
 
   const videoInputRef = useRef();
   const logoInputRef  = useRef();
+  const socialRefs    = useRef({});
 
   useEffect(() => {
     getConfig('main')
@@ -102,6 +103,23 @@ export default function ConfigPage() {
       setMsg('❌ ' + err.message);
     } finally {
       setUploadingImg(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleSocialImgUpload = async (e, imgKey, label) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingSocial(prev => ({ ...prev, [imgKey]: true }));
+    setMsg('');
+    try {
+      const { url } = await uploadFile(file, 'image');
+      setForm(prev => ({ ...prev, [imgKey]: url }));
+      setMsg(`✅ Imagen de ${label} subida. Guardá los cambios para aplicarla.`);
+    } catch (err) {
+      setMsg('❌ ' + err.message);
+    } finally {
+      setUploadingSocial(prev => ({ ...prev, [imgKey]: false }));
       e.target.value = '';
     }
   };
@@ -202,7 +220,66 @@ export default function ConfigPage() {
         </div>
       </div>
 
-      {/* ── Resto de campos ──────────────────────────── */}
+      {/* ── Redes sociales ──────────────────────────── */}
+      <div className="card upload-card">
+        <h3 className="upload-card-title">📲 Redes sociales</h3>
+
+        {SOCIAL_FIELDS.map(({ key, label, urlKey, imgKey, emoji }) => (
+          <div key={key} className="social-config-block">
+            <p className="social-config-label">{emoji} {label}</p>
+
+            <div className="field">
+              <label>Link de {label}</label>
+              <input
+                value={form[urlKey] || ''}
+                onChange={e => setForm({ ...form, [urlKey]: e.target.value })}
+                placeholder={`https://wa.me/... o https://www.${key}.com/...`}
+              />
+            </div>
+
+            <div className="field">
+              <label>Ícono / imagen</label>
+              <div className="social-img-row">
+                {form[imgKey] && (
+                  <img
+                    src={form[imgKey]}
+                    alt={`Ícono ${label}`}
+                    className="social-img-preview"
+                    onError={e => e.target.style.display = 'none'}
+                  />
+                )}
+                <div style={{ flex: 1 }}>
+                  <div className="upload-row" style={{ marginBottom: 8 }}>
+                    <input
+                      ref={el => socialRefs.current[key] = el}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                      style={{ display: 'none' }}
+                      onChange={e => handleSocialImgUpload(e, imgKey, label)}
+                    />
+                    <button
+                      className="btn-upload"
+                      onClick={() => socialRefs.current[key]?.click()}
+                      disabled={uploadingSocial[imgKey]}
+                    >
+                      {uploadingSocial[imgKey] ? '⏳ Subiendo...' : '📤 Subir imagen'}
+                    </button>
+                    <span className="upload-hint">PNG, SVG, WebP</span>
+                  </div>
+                  <input
+                    value={form[imgKey] || ''}
+                    onChange={e => setForm({ ...form, [imgKey]: e.target.value })}
+                    placeholder="https://... o pegá la URL del ícono"
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 13 }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Datos generales ──────────────────────────── */}
       <div className="card">
         <h3 className="upload-card-title">⚙️ Datos generales</h3>
         {TEXT_FIELDS.map(({ key, label }) => (

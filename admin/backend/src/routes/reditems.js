@@ -4,10 +4,15 @@ const RedItem = require('../models/RedItem');
 
 router.use(auth);
 
+const siteFilter = (siteId, extra = {}) =>
+  siteId === 'explore'
+    ? { ...extra, $or: [{ siteId: 'explore' }, { siteId: { $exists: false } }] }
+    : { ...extra, siteId };
+
 // GET /api/reditems
 router.get('/', async (req, res) => {
   try {
-    const items = await RedItem.find().sort({ order: 1 });
+    const items = await RedItem.find(siteFilter(req.siteId)).sort({ order: 1 });
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -17,10 +22,10 @@ router.get('/', async (req, res) => {
 // POST /api/reditems
 router.post('/', async (req, res) => {
   try {
-    const item = await RedItem.create(req.body);
+    const item = await RedItem.create({ ...req.body, siteId: req.siteId });
     res.status(201).json(item);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 });
 

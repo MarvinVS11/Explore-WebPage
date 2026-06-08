@@ -40,6 +40,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// Extrae el sitio activo del header enviado por el frontend admin
+app.use((req, res, next) => {
+  req.siteId = req.headers['x-site-id'] || 'explore';
+  next();
+});
+
 // Servir archivos subidos solo en local (en producción se usan URLs de Cloudinary)
 if (!process.env.VERCEL) {
   const uploadsDir = path.join(__dirname, '../uploads');

@@ -27,7 +27,7 @@ export default function Nosotros() {
   }
 
   return (
-    <section id="nosotros" className="nosotros">
+    <section id="nosotros" className="nosotros section-reveal">
       <div className="nosotros-inner">
 
         {logo && (
@@ -40,7 +40,6 @@ export default function Nosotros() {
         )}
 
         <div className="nosotros-text">
-          <span className="section-label">Quiénes somos</span>
           <h2>{data?.title}</h2>
           <p>{data?.body}</p>
           {data?.ctaText && (

@@ -28,9 +28,10 @@ const siteConfig = {
 const navLinks = [
   { label: 'Inicio',                    href: '#inicio',      order: 1, isActive: true },
   { label: 'Nosotros',                  href: '#nosotros',    order: 2, isActive: true },
-  { label: 'Red de Turismo Sostenible', href: '#redturismo',  order: 3, isActive: true },
-  { label: 'Mapa Turístico',            href: '#turisteando', order: 4, isActive: true },
-  { label: 'Contacto',                  href: '#contacto',    order: 5, isActive: true },
+  { label: 'Galería',                   href: '#galeria',     order: 3, isActive: true },
+  { label: 'Red de Turismo Sostenible', href: '#redturismo',  order: 4, isActive: true },
+  { label: 'Mapa Turístico',            href: '#turisteando', order: 5, isActive: true },
+  { label: 'Contacto',                  href: '#contacto',    order: 6, isActive: true },
 ];
 
 const sections = [
@@ -42,6 +43,16 @@ const sections = [
     ctaText:   'Explorar actividades',
     ctaLink:   '#redturismo',
     isVisible: true,
+    extraData: {},
+  },
+  {
+    key:       'galeria',
+    title:     'Galería de fotos',
+    subtitle:  '',
+    body:      '',
+    ctaText:   '',
+    ctaLink:   '',
+    isVisible: false,
     extraData: {},
   },
   {

@@ -12,6 +12,7 @@ const redItemSchema = new Schema(
     iconUrl:  { type: String, default: '' },
     order:    { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
+    siteId:   { type: String, default: 'explore', index: true },
   },
   { timestamps: true }
 );

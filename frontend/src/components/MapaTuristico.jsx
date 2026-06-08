@@ -19,9 +19,8 @@ export default function MapaTuristico() {
   const mapUrl = data?.extraData?.mapEmbedUrl;
 
   return (
-    <section id="turisteando" className="mapa">
+    <section id="turisteando" className="mapa section-reveal">
       <div className="section-header">
-        <span className="section-label">Mapa Turístico</span>
         <h2>{data?.title}</h2>
         <p>{data?.body}</p>
       </div>

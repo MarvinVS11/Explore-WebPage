@@ -29,10 +29,10 @@ export default function useSmoothScroll() {
       const selector = link.getAttribute('href');
       if (!selector || selector === '#') return;
 
+      e.preventDefault();
+
       const target = document.querySelector(selector);
       if (!target) return;
-
-      e.preventDefault();
 
       const navbarHeight = document.querySelector('.navbar')?.offsetHeight ?? 0;
       const targetY = target.getBoundingClientRect().top + window.scrollY - navbarHeight;

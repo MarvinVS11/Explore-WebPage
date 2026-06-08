@@ -4,22 +4,94 @@ import { getSections, updateSection } from '../api';
 const SECTION_LABELS = {
   hero:     'Hero (inicio)',
   nosotros: 'Nosotros',
+  galeria:  'Galería de fotos',
   red:      'Red de Turismo Sostenible',
   mapa:     'Mapa Turístico',
   contacto: 'Contacto',
 };
 
+function ExtraFields({ sectionKey, extra, onChange }) {
+  const set = (field, value) => onChange({ ...extra, [field]: value });
+
+  if (sectionKey === 'mapa') {
+    return (
+      <div className="field">
+        <label>URL de inserción del mapa (Google Maps embed)</label>
+        <input
+          value={extra.mapEmbedUrl || ''}
+          onChange={e => set('mapEmbedUrl', e.target.value)}
+          placeholder="https://www.google.com/maps/embed?pb=..."
+        />
+      </div>
+    );
+  }
+
+  if (sectionKey === 'contacto') {
+    return (
+      <>
+        <div className="field">
+          <label>Dirección</label>
+          <input
+            value={extra.direccion || ''}
+            onChange={e => set('direccion', e.target.value)}
+            placeholder="San Ramón, Alajuela, Costa Rica"
+          />
+        </div>
+        <div className="field-row">
+          <div className="field">
+            <label>Teléfono / WhatsApp</label>
+            <input
+              value={extra.telefono || ''}
+              onChange={e => set('telefono', e.target.value)}
+              placeholder="+50688888888"
+            />
+          </div>
+          <div className="field">
+            <label>Email</label>
+            <input
+              type="email"
+              value={extra.email || ''}
+              onChange={e => set('email', e.target.value)}
+              placeholder="info@ejemplo.com"
+            />
+          </div>
+        </div>
+        <div className="field">
+          <label>Horario de atención</label>
+          <input
+            value={extra.horario || ''}
+            onChange={e => set('horario', e.target.value)}
+            placeholder="Lunes a viernes, 8:00 am – 5:00 pm"
+          />
+        </div>
+      </>
+    );
+  }
+
+  return null;
+}
+
 export default function SectionsPage() {
   const [sections, setSections] = useState([]);
   const [editing,  setEditing]  = useState(null);
   const [form,     setForm]     = useState({});
+  const [extra,    setExtra]    = useState({});
   const [saving,   setSaving]   = useState(false);
   const [msg,      setMsg]      = useState('');
   const [loading,  setLoading]  = useState(true);
 
+  // Combina las secciones de la DB con las conocidas, para que siempre aparezcan todas
+  const KNOWN_KEYS = Object.keys(SECTION_LABELS);
+
   useEffect(() => {
     getSections()
-      .then(setSections)
+      .then(dbSections => {
+        const merged = KNOWN_KEYS.map(key => {
+          const found = dbSections.find(s => s.key === key);
+          return found || { key, title: '', subtitle: '', body: '', ctaText: '', ctaLink: '', isVisible: false, extraData: {} };
+        });
+        setSections(merged);
+      })
       .catch(err => setMsg('❌ ' + err.message))
       .finally(() => setLoading(false));
   }, []);
@@ -33,8 +105,8 @@ export default function SectionsPage() {
       ctaText:   section.ctaText   || '',
       ctaLink:   section.ctaLink   || '',
       isVisible: section.isVisible ?? true,
-      extraData: JSON.stringify(section.extraData || {}, null, 2),
     });
+    setExtra(section.extraData || {});
     setMsg('');
   };
 
@@ -42,10 +114,7 @@ export default function SectionsPage() {
     setSaving(true);
     setMsg('');
     try {
-      let extraData = {};
-      try { extraData = JSON.parse(form.extraData); } catch { extraData = {}; }
-
-      const updated = await updateSection(editing, { ...form, extraData });
+      const updated = await updateSection(editing, { ...form, extraData: extra });
       setSections(prev => prev.map(s => s.key === editing ? updated : s));
       setEditing(null);
       setMsg('✅ Sección guardada correctamente');
@@ -55,6 +124,11 @@ export default function SectionsPage() {
       setSaving(false);
     }
   };
+
+  const f = (field) => ({
+    value:    form[field],
+    onChange: e => setForm({ ...form, [field]: e.target.value }),
+  });
 
   if (loading) return <div className="page-loading">Cargando secciones...</div>;
 
@@ -80,46 +154,55 @@ export default function SectionsPage() {
 
             {editing === section.key ? (
               <div className="edit-form">
+
                 <div className="field">
-                  <label>Título</label>
-                  <input value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
+                  <label>Título <span className="field-hint">(aparece como heading principal en el sitio)</span></label>
+                  <input {...f('title')} />
                 </div>
-                <div className="field">
-                  <label>Subtítulo</label>
-                  <input value={form.subtitle} onChange={e => setForm({...form, subtitle: e.target.value})} />
-                </div>
-                <div className="field">
-                  <label>Cuerpo / Descripción</label>
-                  <textarea rows={4} value={form.body} onChange={e => setForm({...form, body: e.target.value})} />
-                </div>
-                <div className="field-row">
+
+                {section.key === 'hero' && (
                   <div className="field">
-                    <label>Texto del botón CTA</label>
-                    <input value={form.ctaText} onChange={e => setForm({...form, ctaText: e.target.value})} />
+                    <label>Subtítulo</label>
+                    <input {...f('subtitle')} />
                   </div>
+                )}
+
+                {section.key !== 'hero' && (
                   <div className="field">
-                    <label>Link del botón CTA</label>
-                    <input value={form.ctaLink} onChange={e => setForm({...form, ctaLink: e.target.value})} />
+                    <label>Descripción</label>
+                    <textarea rows={4} {...f('body')} />
                   </div>
-                </div>
-                <div className="field">
-                  <label>Datos extra (JSON)</label>
-                  <textarea
-                    rows={5}
-                    className="code-textarea"
-                    value={form.extraData}
-                    onChange={e => setForm({...form, extraData: e.target.value})}
-                  />
-                </div>
+                )}
+
+                {(section.key === 'hero' || section.key === 'nosotros') && (
+                  <div className="field-row">
+                    <div className="field">
+                      <label>Texto del botón</label>
+                      <input {...f('ctaText')} />
+                    </div>
+                    <div className="field">
+                      <label>Link del botón</label>
+                      <input {...f('ctaLink')} />
+                    </div>
+                  </div>
+                )}
+
+                <ExtraFields
+                  sectionKey={section.key}
+                  extra={extra}
+                  onChange={setExtra}
+                />
+
                 <div className="field-check">
                   <input
                     type="checkbox"
                     id={`vis-${section.key}`}
                     checked={form.isVisible}
-                    onChange={e => setForm({...form, isVisible: e.target.checked})}
+                    onChange={e => setForm({ ...form, isVisible: e.target.checked })}
                   />
                   <label htmlFor={`vis-${section.key}`}>Visible en el sitio</label>
                 </div>
+
                 <div className="btn-row">
                   <button className="btn-save" onClick={handleSave} disabled={saving}>
                     {saving ? 'Guardando...' : 'Guardar'}

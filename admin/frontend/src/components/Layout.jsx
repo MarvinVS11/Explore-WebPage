@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useSite, SITES } from '../context/SiteContext.jsx';
 
 export default function Layout() {
-  const navigate       = useNavigate();
-  const email          = localStorage.getItem('admin_email') || 'Admin';
-  const [open, setOpen] = useState(false);
+  const navigate  = useNavigate();
+  const email     = localStorage.getItem('admin_email') || 'Admin';
+  const [open, setOpen]         = useState(false);
+  const [siteOpen, setSiteOpen] = useState(false);
+  const { siteId, currentSite, switchSite } = useSite();
 
   const logout = () => {
     localStorage.removeItem('admin_token');
@@ -32,20 +35,50 @@ export default function Layout() {
         >
           <span /><span /><span />
         </button>
-        <span className="admin-topbar-title">Explore Admin</span>
+        <span className="admin-topbar-title">
+          {currentSite.icon} {currentSite.label}
+        </span>
       </header>
 
-      {/* ── Overlay para cerrar el sidebar ──────────── */}
       {open && (
         <div className="sidebar-overlay" onClick={() => setOpen(false)} />
       )}
 
       {/* ── Sidebar ──────────────────────────────────── */}
       <aside className={`sidebar${open ? ' sidebar--open' : ''}`}>
-        <div className="sidebar-brand">
-          <span>🌐</span>
-          <span>Explore Admin</span>
+
+        {/* Selector de sitio */}
+        <div
+          className="site-switcher"
+          onClick={() => setSiteOpen(o => !o)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => e.key === 'Enter' && setSiteOpen(o => !o)}
+        >
+          <span>{currentSite.icon} {currentSite.label}</span>
+          <span className={`site-switcher-arrow${siteOpen ? ' open' : ''}`}>▾</span>
         </div>
+
+        {siteOpen && (
+          <div className="site-dropdown">
+            {SITES.map(site => (
+              <button
+                key={site.id}
+                className={'site-option' + (site.id === siteId ? ' active' : '')}
+                onClick={() => {
+                  switchSite(site.id);
+                  setSiteOpen(false);
+                  setOpen(false);
+                }}
+              >
+                <span className="site-option-icon">{site.icon}</span>
+                <span>{site.label}</span>
+                {site.id === siteId && <span className="site-option-check">✓</span>}
+              </button>
+            ))}
+          </div>
+        )}
+
         <nav className="sidebar-nav">
           {navItems.map(item => (
             <NavLink
@@ -60,15 +93,16 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+
         <div className="sidebar-footer">
           <span className="sidebar-email">{email}</span>
           <button className="btn-logout" onClick={logout}>Salir</button>
         </div>
       </aside>
 
-      {/* ── Contenido principal ───────────────────────── */}
+      {/* key={siteId} fuerza remount de todas las páginas al cambiar de sitio */}
       <main className="admin-content">
-        <Outlet />
+        <Outlet key={siteId} />
       </main>
 
     </div>

@@ -2,7 +2,8 @@ const { Schema, model } = require('mongoose');
 
 const siteConfigSchema = new Schema(
   {
-    key:             { type: String, required: true, unique: true },
+    key:             { type: String, required: true },
+    siteId:          { type: String, default: 'explore', index: true },
     siteName:        { type: String, default: '' },
     logoUrl:         { type: String, default: '' },
     faviconUrl:      { type: String, default: '' },
@@ -17,5 +18,8 @@ const siteConfigSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Índice compuesto: misma key puede existir en distintos sitios
+siteConfigSchema.index({ key: 1, siteId: 1 }, { unique: true });
 
 module.exports = model('SiteConfig', siteConfigSchema);

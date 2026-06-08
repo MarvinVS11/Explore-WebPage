@@ -36,12 +36,11 @@ export default function Contacto() {
   }
 
   return (
-    <section id="contacto" className="contacto">
+    <section id="contacto" className="contacto section-reveal">
       <div className="contacto-inner">
 
         {/* Info de contacto */}
         <div className="contacto-info">
-          <span className="section-label">Contacto</span>
           <h2>{data?.title}</h2>
           <p>{data?.body}</p>
 

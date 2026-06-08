@@ -29,8 +29,10 @@ app.use(cors({
     const allowed = [
       'http://localhost:5173',
       'http://localhost:5174',
+      'http://localhost:5175',
       'http://localhost:3000',
       process.env.FRONTEND_URL,
+      process.env.FUBONO_URL,
     ].filter(Boolean);
     // Permitir todas las URLs de Vercel (previews de release, staging, etc.)
     if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
@@ -45,6 +47,12 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Sitio activo — el frontend lo envía en el header X-Site-Id
+app.use((req, res, next) => {
+  req.siteId = req.headers['x-site-id'] || 'explore';
+  next();
+});
 
 // ─── Archivos estáticos (solo en local — Vercel no tiene filesystem persistente) ─
 if (!process.env.VERCEL) {

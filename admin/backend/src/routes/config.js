@@ -4,10 +4,15 @@ const SiteConfig = require('../models/SiteConfig');
 
 router.use(auth);
 
+const siteFilter = (siteId, extra = {}) =>
+  siteId === 'explore'
+    ? { ...extra, $or: [{ siteId: 'explore' }, { siteId: { $exists: false } }] }
+    : { ...extra, siteId };
+
 // GET /api/config/:key
 router.get('/:key', async (req, res) => {
   try {
-    const config = await SiteConfig.findOne({ key: req.params.key });
+    const config = await SiteConfig.findOne(siteFilter(req.siteId, { key: req.params.key }));
     if (!config) return res.status(404).json({ error: 'Config no encontrada' });
     res.json(config);
   } catch (err) {
@@ -15,12 +20,13 @@ router.get('/:key', async (req, res) => {
   }
 });
 
-// PUT /api/config/:key
+// PUT /api/config/:key  (upsert)
 router.put('/:key', async (req, res) => {
   try {
+    const filter = { key: req.params.key, siteId: req.siteId };
     const config = await SiteConfig.findOneAndUpdate(
-      { key: req.params.key },
-      { ...req.body, key: req.params.key },
+      filter,
+      { ...req.body, key: req.params.key, siteId: req.siteId },
       { new: true, upsert: true, runValidators: true }
     );
     res.json(config);

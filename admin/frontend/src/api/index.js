@@ -2,7 +2,8 @@ const BASE = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:5001';
 
 const headers = () => ({
   'Content-Type': 'application/json',
-  Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
+  Authorization:  `Bearer ${localStorage.getItem('admin_token') || ''}`,
+  'X-Site-Id':    localStorage.getItem('admin_site') || 'explore',
 });
 
 async function request(url, options = {}) {
@@ -49,8 +50,11 @@ export const uploadFile = async (file, type = 'image') => {
   formData.append('file', file);
   const res = await fetch(`${BASE}/upload/${type}`, {
     method:  'POST',
-    headers: { Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}` },
-    body:    formData,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
+      'X-Site-Id':   localStorage.getItem('admin_site') || 'explore',
+    },
+    body: formData,
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `Error al subir ${type}`);

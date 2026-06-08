@@ -2,17 +2,21 @@ import { useState } from 'react';
 import useSiteConfig from '../hooks/useSiteConfig';
 import { getImageUrl } from '../api';
 
+const FALLBACK_LINKS = [
+  { _id: 'inicio',      label: 'Inicio',                    href: '#inicio',      isActive: true, order: 1 },
+  { _id: 'nosotros',    label: 'Nosotros',                  href: '#nosotros',    isActive: true, order: 2 },
+  { _id: 'redturismo',  label: 'Red de Turismo',            href: '#redturismo',  isActive: true, order: 3 },
+  { _id: 'turisteando', label: 'Mapa Turístico',            href: '#turisteando', isActive: true, order: 4 },
+  { _id: 'contacto',    label: 'Contacto',                  href: '#contacto',    isActive: true, order: 5 },
+];
+
 export default function Navbar() {
-  const { config } = useSiteConfig();
+  const { config, navLinks } = useSiteConfig();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const menuItems = [
-    { label: 'Inicio', href: '#inicio' },
-    { label: 'Nosotros', href: '#nosotros' },
-    { label: 'Red de Turismo', href: '#redturismo' },
-    { label: 'Mapa Turístico', href: '#turisteando' },
-    { label: 'Contacto', href: '#contacto' },
-  ];
+  const items = (navLinks?.length ? navLinks : FALLBACK_LINKS)
+    .filter(l => l.isActive)
+    .sort((a, b) => a.order - b.order);
 
   return (
     <nav className="navbar">
@@ -28,8 +32,8 @@ export default function Navbar() {
 
         {/* Links escritorio */}
         <ul className="navbar-links">
-          {menuItems.map((item) => (
-            <li key={item.href}>
+          {items.map((item) => (
+            <li key={item._id || item.href}>
               <a href={item.href} onClick={() => setMenuOpen(false)}>
                 {item.label}
               </a>
@@ -51,8 +55,8 @@ export default function Navbar() {
 
       {/* Menú móvil desplegable */}
       <ul className={`navbar-mobile ${menuOpen ? 'active' : ''}`}>
-        {menuItems.map((item) => (
-          <li key={item.href}>
+        {items.map((item) => (
+          <li key={item._id || item.href}>
             <a href={item.href} onClick={() => setMenuOpen(false)}>
               {item.label}
             </a>
