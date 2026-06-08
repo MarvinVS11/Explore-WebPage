@@ -79,3 +79,28 @@ export const updateRedItem  = (id, body) =>
   request(`/api/reditems/${id}`, { method: 'PUT', body: JSON.stringify(body) });
 export const deleteRedItem  = (id)      =>
   request(`/api/reditems/${id}`, { method: 'DELETE' });
+
+// ─── Projects ─────────────────────────────────────────────────
+export const getProyectos   = ()         => request('/api/projects');
+export const createProyecto = (body)     =>
+  request('/api/projects', { method: 'POST', body: JSON.stringify(body) });
+export const updateProyecto = (id, body) =>
+  request(`/api/projects/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteProyecto = (id)       =>
+  request(`/api/projects/${id}`, { method: 'DELETE' });
+
+export const uploadProyectoImage = async (id, side, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(`${BASE}/api/projects/${id}/image/${side}`, {
+    method:  'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
+      'X-Site-Id':   localStorage.getItem('admin_site') || 'explore',
+    },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al subir imagen');
+  return data;
+};

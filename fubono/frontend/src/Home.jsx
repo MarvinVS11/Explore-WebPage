@@ -1,8 +1,9 @@
 import Navbar        from './components/Navbar';
 import Hero          from './components/Hero';
 import Nosotros      from './components/Nosotros';
+import Servicios     from './components/Servicios';
 import Galeria       from './components/Galeria';
-import RedTurismo    from './components/RedTurismo';
+import Proyectos     from './components/Proyectos';
 import MapaTuristico from './components/MapaTuristico';
 import Contacto      from './components/Contacto';
 import Footer        from './components/Footer';
@@ -19,8 +20,9 @@ export default function Home() {
       <main>
         <Hero />
         <Nosotros />
+        <Servicios />
         <Galeria />
-        <RedTurismo />
+        <Proyectos />
         <MapaTuristico />
         <Contacto />
       </main>

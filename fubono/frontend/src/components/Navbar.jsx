@@ -5,7 +5,7 @@ import { getImageUrl } from '../api';
 const FALLBACK_LINKS = [
   { _id: 'inicio',      label: 'Inicio',         href: '#inicio',      isActive: true, order: 1 },
   { _id: 'nosotros',    label: 'Nosotros',        href: '#nosotros',    isActive: true, order: 2 },
-  { _id: 'redturismo',  label: 'Red de Turismo',  href: '#redturismo',  isActive: true, order: 3 },
+  { _id: 'proyectos',   label: 'Nuestra Red',     href: '#proyectos',  isActive: true, order: 3 },
   { _id: 'turisteando', label: 'Mapa Turístico',  href: '#turisteando', isActive: true, order: 4 },
   { _id: 'contacto',    label: 'Contacto',        href: '#contacto',    isActive: true, order: 5 },
 ];

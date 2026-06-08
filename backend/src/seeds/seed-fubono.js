@@ -46,6 +46,26 @@ const sections = [
   },
   {
     siteId:    SITE_ID,
+    key:       'servicios',
+    title:     'Nuestros Servicios',
+    subtitle:  'Impulsamos el turismo sostenible con soluciones integrales para la región',
+    body:      '',
+    ctaText:   '',
+    ctaLink:   '',
+    isVisible: true,
+    extraData: {
+      asesorias_label: 'Asesorías y consultorías',
+      asesorias_href:  '#contacto',
+      marketing_label: 'Marketing turístico',
+      marketing_href:  '#contacto',
+      charlas_label:   'Charlas y conferencias',
+      charlas_href:    '#contacto',
+      cursos_label:    'Cursos formativos',
+      cursos_href:     '#contacto',
+    },
+  },
+  {
+    siteId:    SITE_ID,
     key:       'nosotros',
     title:     'Quiénes somos',
     subtitle:  '',
@@ -96,12 +116,13 @@ const sections = [
 ];
 
 const navLinks = [
-  { siteId: SITE_ID, label: 'Inicio',        href: '#inicio',      order: 1, isActive: true },
-  { siteId: SITE_ID, label: 'Nosotros',       href: '#nosotros',    order: 2, isActive: true },
-  { siteId: SITE_ID, label: 'Galería',        href: '#galeria',     order: 3, isActive: true },
-  { siteId: SITE_ID, label: 'Nuestra Red',    href: '#redturismo',  order: 4, isActive: true },
-  { siteId: SITE_ID, label: 'Mapa',           href: '#turisteando', order: 5, isActive: true },
-  { siteId: SITE_ID, label: 'Contacto',       href: '#contacto',    order: 6, isActive: true },
+  { siteId: SITE_ID, label: 'Inicio',      href: '#inicio',      order: 1, isActive: true },
+  { siteId: SITE_ID, label: 'Nosotros',    href: '#nosotros',    order: 2, isActive: true },
+  { siteId: SITE_ID, label: 'Servicios',   href: '#servicios',   order: 3, isActive: true },
+  { siteId: SITE_ID, label: 'Galería',     href: '#galeria',     order: 4, isActive: true },
+  { siteId: SITE_ID, label: 'Nuestra Red', href: '#proyectos',  order: 5, isActive: true },
+  { siteId: SITE_ID, label: 'Mapa',        href: '#turisteando', order: 6, isActive: true },
+  { siteId: SITE_ID, label: 'Contacto',    href: '#contacto',    order: 7, isActive: true },
 ];
 
 async function seedFubono() {
@@ -129,8 +150,8 @@ async function seedFubono() {
 
     console.log('🌱 Seed Fubono completado:');
     console.log(`   • SiteConfig : 1`);
-    console.log(`   • Sections   : ${sections.length}`);
-    console.log(`   • NavLinks   : ${navLinks.length}`);
+    console.log(`   • Sections   : ${sections.length} (hero, servicios, nosotros, red, galeria, mapa, contacto)`);
+    console.log(`   • NavLinks   : ${navLinks.length} (Inicio, Nosotros, Servicios, Galería, Nuestra Red, Mapa, Contacto)`);
     console.log('');
     console.log('💡 Ahora ve al panel admin → "Fubono Admin" para personalizar el contenido.');
 

@@ -19,8 +19,9 @@ export default function Layout() {
     { to: '/sections', label: '📝 Secciones' },
     { to: '/images',   label: '🖼️ Imágenes' },
     { to: '/config',   label: '⚙️ Configuración' },
-    { to: '/navlinks', label: '🔗 Menú' },
-    { to: '/reditems', label: '🌿 Red de Turismo' },
+    { to: '/navlinks',  label: '🔗 Menú' },
+    { to: '/proyectos', label: '📋 Proyectos' },
+    { to: '/reditems',  label: '🌿 Red de Turismo' },
   ];
 
   return (

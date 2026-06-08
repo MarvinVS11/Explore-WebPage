@@ -13,7 +13,7 @@ export default function RedTurismo() {
 
   if (loading || loadingItems) {
     return (
-      <section id="redturismo" className="red-turismo">
+      <section id="proyectos" className="red-turismo">
         <div className="section-header">
           <Skeleton height="2rem" width="60%" />
         </div>
@@ -27,7 +27,7 @@ export default function RedTurismo() {
   }
 
   return (
-    <section id="redturismo" className="red-turismo section-reveal">
+    <section id="proyectos" className="red-turismo section-reveal">
       <div className="section-header">
         <h2>{data?.title}</h2>
         <p>{data?.body}</p>

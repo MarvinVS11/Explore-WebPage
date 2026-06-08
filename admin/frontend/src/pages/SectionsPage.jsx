@@ -2,16 +2,78 @@ import { useState, useEffect } from 'react';
 import { getSections, updateSection } from '../api';
 
 const SECTION_LABELS = {
-  hero:     'Hero (inicio)',
-  nosotros: 'Nosotros',
-  galeria:  'Galería de fotos',
-  red:      'Red de Turismo Sostenible',
-  mapa:     'Mapa Turístico',
-  contacto: 'Contacto',
+  hero:      'Hero (inicio)',
+  nosotros:  'Nosotros',
+  servicios: 'Nuestros Servicios',
+  galeria:   'Galería de fotos',
+  red:       'Red de Turismo Sostenible',
+  mapa:      'Mapa Turístico',
+  contacto:  'Contacto',
 };
 
 function ExtraFields({ sectionKey, extra, onChange }) {
   const set = (field, value) => onChange({ ...extra, [field]: value });
+
+  if (sectionKey === 'servicios') {
+    const CARDS = [
+      { id: 'asesorias', defaultLabel: 'Asesorías y consultorías' },
+      { id: 'marketing', defaultLabel: 'Marketing turístico' },
+      { id: 'charlas',   defaultLabel: 'Charlas y conferencias' },
+      { id: 'cursos',    defaultLabel: 'Cursos formativos' },
+    ];
+    return (
+      <>
+        {CARDS.map(card => (
+          <div key={card.id} className="extra-group">
+            <p className="extra-group-title">🪧 {card.defaultLabel}</p>
+            <div className="field-row">
+              <div className="field">
+                <label>Etiqueta del card</label>
+                <input
+                  value={extra[`${card.id}_label`] || ''}
+                  onChange={e => set(`${card.id}_label`, e.target.value)}
+                  placeholder={card.defaultLabel}
+                />
+              </div>
+              <div className="field field-sm">
+                <label>Enlace (href)</label>
+                <input
+                  value={extra[`${card.id}_href`] || ''}
+                  onChange={e => set(`${card.id}_href`, e.target.value)}
+                  placeholder="#contacto"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </>
+    );
+  }
+
+  if (sectionKey === 'nosotros') {
+    return (
+      <>
+        <div className="field">
+          <label>Misión</label>
+          <textarea
+            rows={4}
+            value={extra.mision || ''}
+            onChange={e => set('mision', e.target.value)}
+            placeholder="Nuestra misión es..."
+          />
+        </div>
+        <div className="field">
+          <label>Visión</label>
+          <textarea
+            rows={4}
+            value={extra.vision || ''}
+            onChange={e => set('vision', e.target.value)}
+            placeholder="Nuestra visión es..."
+          />
+        </div>
+      </>
+    );
+  }
 
   if (sectionKey === 'mapa') {
     return (
