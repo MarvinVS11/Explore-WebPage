@@ -53,13 +53,14 @@ if (!process.env.VERCEL) {
   app.use('/media/video',  express.static(path.join(uploadsDir, 'video')));
 }
 
-app.use('/auth',         require('./routes/auth'));
-app.use('/api/sections', require('./routes/sections'));
-app.use('/api/config',   require('./routes/config'));
-app.use('/api/navlinks', require('./routes/navlinks'));
-app.use('/api/reditems', require('./routes/reditems'));
-app.use('/api/images',   require('./routes/images'));
-app.use('/upload',       require('./routes/upload'));
+app.use('/auth',          require('./routes/auth'));
+app.use('/api/sections',  require('./routes/sections'));
+app.use('/api/config',    require('./routes/config'));
+app.use('/api/navlinks',  require('./routes/navlinks'));
+app.use('/api/reditems',  require('./routes/reditems'));
+app.use('/api/images',    require('./routes/images'));
+app.use('/api/projects',  require('./routes/projects'));
+app.use('/upload',        require('./routes/upload'));
 
 app.get('/health', (_, res) =>
   res.json({ status: 'ok', service: 'explore-admin-api' })

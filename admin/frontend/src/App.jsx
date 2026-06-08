@@ -4,6 +4,7 @@ import SectionsPage  from './pages/SectionsPage';
 import ConfigPage    from './pages/ConfigPage';
 import NavLinksPage  from './pages/NavLinksPage';
 import RedItemsPage  from './pages/RedItemsPage';
+import ProyectosPage from './pages/ProyectosPage';
 import ImagesPage    from './pages/ImagesPage';
 import Layout        from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -25,7 +26,8 @@ export default function App() {
           <Route path="sections" element={<SectionsPage />} />
           <Route path="config"   element={<ConfigPage />} />
           <Route path="navlinks" element={<NavLinksPage />} />
-          <Route path="reditems" element={<RedItemsPage />} />
+          <Route path="reditems"  element={<RedItemsPage />} />
+          <Route path="proyectos" element={<ProyectosPage />} />
           <Route path="images"   element={<ImagesPage />} />
         </Route>
       </Routes>

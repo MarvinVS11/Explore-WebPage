@@ -78,12 +78,13 @@ app.use(async (req, res, next) => {
 });
 
 // ─── Rutas de la API ──────────────────────────────────────────────────────────
-app.use('/api',          require('./routes/index'));
-app.use('/api/config',   require('./routes/config'));
-app.use('/api/sections', require('./routes/sections'));
-app.use('/api/images',   require('./routes/images'));
-app.use('/api/navlinks', require('./routes/navlinks'));
-app.use('/api/reditems', require('./routes/reditems'));
+app.use('/api',           require('./routes/index'));
+app.use('/api/config',    require('./routes/config'));
+app.use('/api/sections',  require('./routes/sections'));
+app.use('/api/images',    require('./routes/images'));
+app.use('/api/navlinks',  require('./routes/navlinks'));
+app.use('/api/reditems',  require('./routes/reditems'));
+app.use('/api/projects',  require('./routes/projects'));
 
 app.get('/health', (req, res) =>
   res.json({ status: 'ok', service: 'explore-public-api', time: new Date().toISOString() })

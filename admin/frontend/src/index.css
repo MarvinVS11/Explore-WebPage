@@ -515,6 +515,112 @@ td code {
 .badge-internal { background: #ECFDF5; color: #059669; }
 .badge-external { background: #EFF6FF; color: #2563EB; }
 .badge-pdf      { background: #FEF2F2; color: var(--danger); }
+.badge-active   { background: #ECFDF5; color: #059669; margin-left: 8px; }
+.badge-inactive { background: #F5F5F5; color: #9CA3AF; margin-left: 8px; }
+
+/* ─── Proyectos admin ────────────────────────────── */
+.link-editor { margin: 1rem 0; }
+
+.field-label-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   0.5rem;
+}
+
+.field-label-row label { font-weight: 600; font-size: 13px; }
+
+.btn-add-sm {
+  font-size:     12px;
+  padding:       4px 10px;
+  background:    var(--accent);
+  color:         #fff;
+  border:        none;
+  border-radius: 6px;
+  cursor:        pointer;
+}
+
+.btn-add-sm:hover { background: var(--accent-d); }
+
+.link-row {
+  display:     grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap:         0.75rem;
+  align-items: flex-start;
+  padding:     0.75rem;
+  background:  #F9FAFB;
+  border:      1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.empty-hint {
+  color:     var(--text-light);
+  font-size: 13px;
+  padding:   0.5rem 0;
+}
+
+.action-btns { display: flex; gap: 0.5rem; }
+
+.img-uploaders-row {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   1.5rem;
+  margin:                1rem 0;
+}
+
+.img-uploader { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.img-uploader-label { font-weight: 600; font-size: 13px; margin: 0; }
+
+.img-uploader-preview {
+  width:         100%;
+  aspect-ratio:  4/3;
+  object-fit:    cover;
+  border-radius: 8px;
+  border:        1px solid var(--border);
+}
+
+.img-uploader-empty {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  aspect-ratio:    4/3;
+  border:          2px dashed var(--border);
+  border-radius:   8px;
+  color:           var(--text-light);
+  font-size:       13px;
+}
+
+.btn-upload {
+  padding:       6px 12px;
+  font-size:     12px;
+  background:    #F3F4F6;
+  border:        1px solid var(--border);
+  border-radius: 6px;
+  cursor:        pointer;
+  width:         fit-content;
+}
+
+.btn-upload:hover:not(:disabled) { background: #E5E7EB; }
+.btn-upload:disabled { opacity: 0.5; cursor: default; }
+
+.card-images-preview {
+  display: flex;
+  gap:     0.5rem;
+  margin-top: 0.5rem;
+}
+
+.card-images-preview img {
+  width:         80px;
+  height:        60px;
+  object-fit:    cover;
+  border-radius: 6px;
+  border:        1px solid var(--border);
+}
+
+.error-msg { color: var(--danger); font-size: 12px; margin: 0; }
+.field-required { color: var(--danger); }
 
 /* ─── Upload ─────────────────────────────────────── */
 .upload-card { margin-bottom: 16px; }

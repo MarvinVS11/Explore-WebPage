@@ -25,6 +25,12 @@ export const getSiteConfig = async () => {
   return res.json();
 };
 
+export const getProyectos = async () => {
+  const res = await fetch(`${BASE}/api/projects`, { headers: siteHeaders });
+  if (!res.ok) return [];
+  return res.json();
+};
+
 export const getNavLinks = async () => {
   const res = await fetch(`${BASE}/api/navlinks`, { headers: siteHeaders });
   if (!res.ok) return [];

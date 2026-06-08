@@ -55,6 +55,25 @@ export default function Nosotros() {
 
       </div>
 
+      {(data?.extraData?.mision || data?.extraData?.vision) && (
+        <div className="nosotros-mv">
+          {data.extraData.mision && (
+            <div className="nosotros-mv-card">
+              <span className="nosotros-mv-icon">🎯</span>
+              <h3>Misión</h3>
+              <p>{data.extraData.mision}</p>
+            </div>
+          )}
+          {data.extraData.vision && (
+            <div className="nosotros-mv-card">
+              <span className="nosotros-mv-icon">🌿</span>
+              <h3>Visión</h3>
+              <p>{data.extraData.vision}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {galeria.length > 0 && (
         <div className="nosotros-galeria">
           {galeria.map(img => (
