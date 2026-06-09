@@ -12,7 +12,7 @@ const imageSchema = new Schema(
     role: {
       type: String,
       default: 'galeria',
-      enum: ['hero', 'logo', 'slider', 'galeria', 'icon'],
+      enum: ['hero', 'banner', 'logo', 'portada', 'slider', 'galeria', 'icon'],
     },
     alt:      { type: String, default: '' },
     linkUrl:  { type: String, default: '' },
