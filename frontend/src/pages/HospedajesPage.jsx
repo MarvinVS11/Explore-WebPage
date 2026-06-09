@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getHospedajes, getSection, getImages, getImageUrl } from '../api';
 
@@ -21,7 +21,8 @@ function LinkIcon() {
 }
 
 export default function HospedajesPage() {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const listRef   = useRef(null);
   const [hospedajes, setHospedajes] = useState([]);
   const [section,    setSection]    = useState(null);
   const [banner,     setBanner]     = useState(null);
@@ -41,6 +42,23 @@ export default function HospedajesPage() {
     window.scrollTo({ top: 0 });
   }, []);
 
+  // Observer de entrada — se repite en cada scroll
+  useEffect(() => {
+    if (loading || !listRef.current) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('card-visible');
+        } else {
+          entry.target.classList.remove('card-visible');
+        }
+      }),
+      { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }
+    );
+    listRef.current.querySelectorAll('.hospedaje-card').forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, [loading]);
+
   return (
     <div className="hospedajes-page">
 
@@ -59,13 +77,15 @@ export default function HospedajesPage() {
       </div>
 
       {/* Lista */}
-      <div className="hospedajes-list">
+      <div className="hospedajes-list" ref={listRef}>
         {loading && [1, 2, 3].map(i => (
           <div key={i} className="hospedaje-card hospedaje-card--skeleton" />
         ))}
 
-        {!loading && hospedajes.map((h, idx) => (
-          <div key={h._id} className={`hospedaje-card${idx % 2 === 1 ? ' hospedaje-card--alt' : ''}`}>
+        {!loading && hospedajes.map((h, idx) => {
+          const isAlt = idx % 2 === 1;
+          return (
+          <div key={h._id} className={`hospedaje-card${isAlt ? ' hospedaje-card--alt' : ''} ${isAlt ? 'reveal-right' : 'reveal-left'}`}>
             <div className="hospedaje-info">
               <h2 className="hospedaje-title">{h.title}</h2>
               <p className="hospedaje-description">{h.description}</p>
@@ -90,7 +110,8 @@ export default function HospedajesPage() {
               }
             </div>
           </div>
-        ))}
+          );
+        })}
 
         {!loading && hospedajes.length === 0 && (
           <p className="hospedajes-empty">No hay hospedajes disponibles.</p>
