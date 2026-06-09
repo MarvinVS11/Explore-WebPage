@@ -4,7 +4,8 @@ import SectionsPage  from './pages/SectionsPage';
 import ConfigPage    from './pages/ConfigPage';
 import NavLinksPage  from './pages/NavLinksPage';
 import RedItemsPage  from './pages/RedItemsPage';
-import ProyectosPage from './pages/ProyectosPage';
+import ProyectosPage   from './pages/ProyectosPage';
+import HospedajesPage  from './pages/HospedajesPage';
 import ImagesPage    from './pages/ImagesPage';
 import Layout        from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -28,7 +29,8 @@ export default function App() {
           <Route path="navlinks" element={<NavLinksPage />} />
           <Route path="reditems"  element={<RedItemsPage />} />
           <Route path="proyectos" element={<ProyectosPage />} />
-          <Route path="images"   element={<ImagesPage />} />
+          <Route path="images"      element={<ImagesPage />} />
+          <Route path="hospedajes"  element={<HospedajesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

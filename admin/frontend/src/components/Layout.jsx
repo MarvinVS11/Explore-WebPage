@@ -20,8 +20,9 @@ export default function Layout() {
     { to: '/images',   label: '🖼️ Imágenes' },
     { to: '/config',   label: '⚙️ Configuración' },
     { to: '/navlinks',  label: '🔗 Menú' },
-    { to: '/proyectos', label: '📋 Proyectos' },
-    { to: '/reditems',  label: '🌿 Red de Turismo' },
+    { to: '/proyectos',  label: '📋 Proyectos' },
+    { to: '/hospedajes', label: '🏡 Hospedajes' },
+    { to: '/reditems',   label: '🌿 Red de Turismo' },
   ];
 
   return (

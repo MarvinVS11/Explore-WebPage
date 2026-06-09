@@ -38,6 +38,13 @@ export const getRedItems = async () => {
   return res.json();
 };
 
+// ─── Hospedajes ───────────────────────────────────────────────────────────────
+export const getHospedajes = async () => {
+  const res = await fetch(`${BASE}/api/hospedajes`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
 // ─── Helper URL de imágenes ──────────────────────────────────────────────────
 export const getImageUrl = (url) => {
   if (!url) return '/images/placeholder.webp';

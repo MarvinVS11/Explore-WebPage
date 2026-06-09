@@ -80,6 +80,15 @@ export const updateRedItem  = (id, body) =>
 export const deleteRedItem  = (id)      =>
   request(`/api/reditems/${id}`, { method: 'DELETE' });
 
+// ─── Hospedajes ───────────────────────────────────────────
+export const getHospedajes    = ()         => request('/api/hospedajes');
+export const createHospedaje  = (body)     =>
+  request('/api/hospedajes', { method: 'POST', body: JSON.stringify(body) });
+export const updateHospedaje  = (id, body) =>
+  request(`/api/hospedajes/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteHospedaje  = (id)       =>
+  request(`/api/hospedajes/${id}`, { method: 'DELETE' });
+
 // ─── Projects ─────────────────────────────────────────────────
 export const getProyectos   = ()         => request('/api/projects');
 export const createProyecto = (body)     =>

@@ -396,7 +396,8 @@ p {
 
 .nosotros-portada {
   width:         100%;
-  aspect-ratio:  16 / 5;
+  aspect-ratio:  16 / 4;
+  max-height:    260px;
   overflow:      hidden;
   margin-bottom: 3rem;
 }
@@ -424,22 +425,6 @@ p {
   margin:    0 auto;
 }
 
-.nosotros-img {
-  width:         140px;
-  height:        140px;
-  margin:        0 auto 1.5rem;
-  border-radius: 50%;
-  overflow:      hidden;
-  box-shadow:    var(--shadow-md);
-  border:        3px solid var(--border);
-}
-
-.nosotros-img img {
-  width:      100%;
-  height:     100%;
-  object-fit: cover;
-  display:    block;
-}
 
 .nosotros-text {
   display:        flex;
@@ -589,6 +574,217 @@ p {
 
 .nosotros-galeria-item:hover .nosotros-galeria-img {
   transform: scale(1.04);
+}
+
+/* ─── Página Hospedajes ──────────────────────────────────────── */
+.hospedajes-page {
+  min-height: 100vh;
+  background: var(--white);
+}
+
+.hospedajes-banner {
+  width:        100%;
+  height:       220px;
+  overflow:     hidden;
+}
+
+.hospedajes-banner-img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+}
+
+.hospedajes-banner-placeholder {
+  width:      100%;
+  height:     100%;
+  background: linear-gradient(135deg, var(--verde) 0%, #1abc9c 100%);
+  opacity:    0.2;
+}
+
+.hospedajes-header {
+  max-width:   860px;
+  margin:      0 auto;
+  padding:     2.5rem 1.5rem 1rem;
+  text-align:  center;
+}
+
+.hospedajes-header h1 {
+  font-family:    var(--font-display);
+  font-size:      clamp(1.1rem, 3vw, 1.6rem);
+  font-weight:    700;
+  color:          #0ec9c0;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom:  1rem;
+}
+
+.hospedajes-desc {
+  font-size:   0.95rem;
+  color:       var(--muted);
+  line-height: 1.8;
+  max-width:   680px;
+  margin:      0 auto;
+}
+
+.hospedajes-list {
+  max-width: 960px;
+  margin:    0 auto;
+  padding:   1rem 1.5rem 3rem;
+  display:   flex;
+  flex-direction: column;
+  gap:       2.5rem;
+}
+
+.hospedaje-card {
+  display:        grid;
+  grid-template-columns: 1fr;
+  gap:            1.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom:  1px solid var(--border);
+}
+
+.hospedaje-card:last-child { border-bottom: none; }
+
+.hospedaje-title {
+  font-family:  var(--font-display);
+  font-size:    1.25rem;
+  font-weight:  600;
+  color:        #0ec9c0;
+  margin-bottom: 0.75rem;
+}
+
+.hospedaje-description {
+  font-size:   0.92rem;
+  line-height: 1.8;
+  color:       var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.hospedaje-actions {
+  display:     flex;
+  align-items: center;
+  gap:         0.75rem;
+  flex-wrap:   wrap;
+}
+
+.hospedaje-maps-btn {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           40px;
+  height:          40px;
+  border-radius:   50%;
+  background:      #fff3f3;
+  color:           #e74c3c;
+  transition:      transform 0.2s ease, background 0.2s ease;
+  flex-shrink:     0;
+}
+
+.hospedaje-maps-btn:hover {
+  background: #fde8e8;
+  transform:  scale(1.1);
+}
+
+.hospedaje-pin-icon { width: 22px; height: 22px; }
+
+.hospedaje-link-btn {
+  display:      inline-flex;
+  align-items:  center;
+  gap:          0.4rem;
+  padding:      0.45rem 1.1rem;
+  background:   #0ec9c0;
+  color:        var(--white);
+  border-radius: var(--radius-full);
+  font-size:    0.85rem;
+  font-weight:  500;
+  transition:   background 0.2s ease, transform 0.2s ease;
+}
+
+.hospedaje-link-btn:hover {
+  background: #0ab3ab;
+  transform:  translateY(-1px);
+}
+
+.hospedaje-link-icon { width: 14px; height: 14px; }
+
+.hospedaje-img-wrap {
+  border-radius: var(--radius-md);
+  overflow:      hidden;
+  max-height:    280px;
+}
+
+.hospedaje-img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+  transition: transform 0.4s ease;
+}
+
+.hospedaje-img-wrap:hover .hospedaje-img { transform: scale(1.03); }
+
+.hospedaje-img-placeholder {
+  width:      100%;
+  height:     220px;
+  background: var(--bg-alt);
+  border-radius: var(--radius-md);
+}
+
+.hospedaje-card--skeleton {
+  height:     200px;
+  background: var(--bg-alt);
+  border-radius: var(--radius-md);
+  animation:  pulse 1.5s ease-in-out infinite;
+}
+
+.hospedajes-empty {
+  text-align: center;
+  color:      var(--muted);
+  padding:    3rem 0;
+}
+
+.hospedajes-footer {
+  display:         flex;
+  justify-content: flex-end;
+  padding:         1rem 2rem 2.5rem;
+  max-width:       960px;
+  margin:          0 auto;
+}
+
+.btn-volver {
+  padding:       0.6rem 1.8rem;
+  background:    var(--verde);
+  color:         var(--white);
+  border:        none;
+  border-radius: var(--radius-full);
+  font-size:     0.9rem;
+  font-weight:   600;
+  cursor:        pointer;
+  letter-spacing: 0.05em;
+  transition:    background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-volver:hover {
+  background: var(--verde-dark);
+  transform:  translateY(-2px);
+}
+
+@media (min-width: 768px) {
+  .hospedajes-banner { height: 300px; }
+  .hospedaje-card {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .hospedaje-card--alt .hospedaje-info { order: 2; }
+  .hospedaje-card--alt .hospedaje-img-wrap { order: 1; }
+  .hospedaje-img-wrap { max-height: 320px; }
+}
+
+@media (min-width: 1024px) {
+  .hospedajes-banner { height: 340px; }
+  .hospedaje-card { grid-template-columns: 1fr 320px; gap: 2.5rem; }
+  .hospedaje-card--alt { grid-template-columns: 320px 1fr; }
 }
 
 /* ─── Galería Red de Turismo ─────────────────────────────────── */
@@ -906,7 +1102,6 @@ p {
 
   /* Nosotros */
   .nosotros { padding: 5rem 2rem; }
-  .nosotros-img { width: 160px; height: 160px; }
 
   /* Red Turismo */
   .red-turismo { padding: 5rem 2rem; }
@@ -954,7 +1149,6 @@ p {
   .contacto-inner { gap: 6rem; }
 
   /* Nosotros */
-  .nosotros-img { width: 180px; height: 180px; }
 }
 
 /* ─── Responsive: Wide (1280px+) ────────────────────────────── */

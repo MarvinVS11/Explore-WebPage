@@ -3,16 +3,18 @@ import { getSections, updateSection } from '../api';
 import { useSite } from '../context/SiteContext';
 
 const ALL_SECTION_LABELS = {
-  hero:      'Hero (inicio)',
-  nosotros:  'Nosotros',
-  servicios: 'Nuestros Servicios',
-  galeria:   'Galería de fotos',
-  red:       'Red de Turismo Sostenible',
-  mapa:      'Mapa Turístico',
-  contacto:  'Contacto',
+  hero:        'Hero (inicio)',
+  nosotros:    'Nosotros',
+  servicios:   'Nuestros Servicios',
+  galeria:     'Galería de fotos',
+  red:         'Red de Turismo Sostenible',
+  hospedajes:  'Hospedajes',
+  mapa:        'Mapa Turístico',
+  contacto:    'Contacto',
 };
 
 const EXPLORE_HIDDEN = ['servicios'];
+const FUBONO_HIDDEN  = ['hospedajes'];
 
 function ExtraFields({ sectionKey, extra, onChange }) {
   const set = (field, value) => onChange({ ...extra, [field]: value });
@@ -146,9 +148,10 @@ export default function SectionsPage() {
   const [msg,      setMsg]      = useState('');
   const [loading,  setLoading]  = useState(true);
 
-  const SECTION_LABELS = siteId === 'explore'
-    ? Object.fromEntries(Object.entries(ALL_SECTION_LABELS).filter(([k]) => !EXPLORE_HIDDEN.includes(k)))
-    : ALL_SECTION_LABELS;
+  const hidden = siteId === 'explore' ? EXPLORE_HIDDEN : FUBONO_HIDDEN;
+  const SECTION_LABELS = Object.fromEntries(
+    Object.entries(ALL_SECTION_LABELS).filter(([k]) => !hidden.includes(k))
+  );
 
   const KNOWN_KEYS = Object.keys(SECTION_LABELS);
 
