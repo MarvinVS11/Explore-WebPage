@@ -3,19 +3,19 @@ import { getImages, createImage, updateImage, deleteImage, uploadFile } from '..
 
 const SECTIONS = [
   { key: 'hero',     label: 'Banner / Hero',      roles: ['banner'] },
-  { key: 'nosotros', label: 'Nosotros',            roles: ['logo', 'galeria'] },
-  { key: 'red',      label: 'Red de Turismo',      roles: ['slider', 'galeria'] },
+  { key: 'nosotros', label: 'Nosotros',            roles: ['portada', 'logo'] },
   { key: 'galeria',  label: 'Galería de fotos',    roles: ['galeria'] },
 ];
 
 const ROLE_LABELS = {
   banner:  'Banner principal',
+  portada: 'Imagen de portada',
   logo:    'Logo principal',
   galeria: 'Galería',
   slider:  'Slider / Banner',
 };
 
-const EMPTY_FORM = { url: '', publicId: '', role: 'galeria', alt: '', order: 0, isActive: true };
+const EMPTY_FORM = { url: '', publicId: '', role: 'portada', alt: '', order: 0, isActive: true };
 
 export default function ImagesPage() {
   const [section,    setSection]    = useState('nosotros');
@@ -116,7 +116,7 @@ export default function ImagesPage() {
           <button
             key={s.key}
             className={'tab-btn' + (section === s.key ? ' active' : '')}
-            onClick={() => { setSection(s.key); setForm(EMPTY_FORM); setEditingId(null); }}
+            onClick={() => { setSection(s.key); setForm({ ...EMPTY_FORM, role: s.roles[0] }); setEditingId(null); }}
           >
             {s.label}
           </button>

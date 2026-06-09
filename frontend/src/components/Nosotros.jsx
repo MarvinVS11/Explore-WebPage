@@ -6,20 +6,18 @@ export default function Nosotros() {
   const { data, images, loading } = useSection('nosotros');
 
   const logo    = images.find(img => img.role === 'logo' && img.isActive !== false);
-  const galeria = images.filter(img => img.role === 'galeria' && img.isActive !== false)
-                        .sort((a, b) => a.order - b.order);
+  const portada = images.find(img => img.role === 'portada' && img.isActive !== false)
+                ?? images.find(img => img.role !== 'logo'   && img.isActive !== false);
 
   if (loading) {
     return (
       <section id="nosotros" className="nosotros">
+        <Skeleton height="340px" borderRadius="0" />
         <div className="nosotros-inner">
-          <Skeleton height="200px" borderRadius="12px" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <Skeleton height="1rem" width="120px" />
-            <Skeleton height="2rem" width="80%" />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <Skeleton height="2rem" width="60%" />
             <Skeleton height="1rem" />
-            <Skeleton height="1rem" />
-            <Skeleton height="1rem" width="70%" />
+            <Skeleton height="1rem" width="80%" />
           </div>
         </div>
       </section>
@@ -28,18 +26,31 @@ export default function Nosotros() {
 
   return (
     <section id="nosotros" className="nosotros section-reveal">
+
+      {portada && (
+        <div className="nosotros-portada">
+          <DynamicImage
+            src={portada.url}
+            alt={portada.alt || 'Nosotros'}
+            className="nosotros-portada-img"
+          />
+        </div>
+      )}
+
+      {!portada && (
+        <div className="nosotros-portada nosotros-portada--empty" aria-hidden="true" />
+      )}
+
       <div className="nosotros-inner">
-
-        {logo && (
-          <div className="nosotros-img">
-            <DynamicImage
-              src={logo.url}
-              alt={logo.alt || 'Fundación Bosque Nuboso'}
-            />
-          </div>
-        )}
-
         <div className="nosotros-text">
+          {logo && (
+            <div className="nosotros-img">
+              <DynamicImage
+                src={logo.url}
+                alt={logo.alt || 'Explore Occidente'}
+              />
+            </div>
+          )}
           <h2>{data?.title}</h2>
           <p>{data?.body}</p>
           {data?.ctaText && (
@@ -53,22 +64,8 @@ export default function Nosotros() {
             </a>
           )}
         </div>
-
       </div>
 
-      {galeria.length > 0 && (
-        <div className="nosotros-galeria">
-          {galeria.map(img => (
-            <div key={img._id} className="nosotros-galeria-item">
-              <DynamicImage
-                src={img.url}
-                alt={img.alt || ''}
-                className="nosotros-galeria-img"
-              />
-            </div>
-          ))}
-        </div>
-      )}
     </section>
   );
 }

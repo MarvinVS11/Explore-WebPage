@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getSections, updateSection } from '../api';
+import { useSite } from '../context/SiteContext';
 
-const SECTION_LABELS = {
+const ALL_SECTION_LABELS = {
   hero:      'Hero (inicio)',
   nosotros:  'Nosotros',
   servicios: 'Nuestros Servicios',
@@ -10,6 +11,8 @@ const SECTION_LABELS = {
   mapa:      'Mapa Turístico',
   contacto:  'Contacto',
 };
+
+const EXPLORE_HIDDEN = ['servicios'];
 
 function ExtraFields({ sectionKey, extra, onChange }) {
   const set = (field, value) => onChange({ ...extra, [field]: value });
@@ -134,6 +137,7 @@ function ExtraFields({ sectionKey, extra, onChange }) {
 }
 
 export default function SectionsPage() {
+  const { siteId } = useSite();
   const [sections, setSections] = useState([]);
   const [editing,  setEditing]  = useState(null);
   const [form,     setForm]     = useState({});
@@ -142,7 +146,10 @@ export default function SectionsPage() {
   const [msg,      setMsg]      = useState('');
   const [loading,  setLoading]  = useState(true);
 
-  // Combina las secciones de la DB con las conocidas, para que siempre aparezcan todas
+  const SECTION_LABELS = siteId === 'explore'
+    ? Object.fromEntries(Object.entries(ALL_SECTION_LABELS).filter(([k]) => !EXPLORE_HIDDEN.includes(k)))
+    : ALL_SECTION_LABELS;
+
   const KNOWN_KEYS = Object.keys(SECTION_LABELS);
 
   useEffect(() => {
