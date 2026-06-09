@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { getImages, createImage, updateImage, deleteImage, uploadFile } from '../api';
 
 const SECTIONS = [
-  { key: 'hero',     label: 'Banner / Hero',      roles: ['banner'] },
-  { key: 'nosotros', label: 'Nosotros',            roles: ['portada', 'logo'] },
-  { key: 'galeria',  label: 'Galería de fotos',    roles: ['galeria'] },
+  { key: 'hero',       label: 'Banner / Hero',      roles: ['banner'] },
+  { key: 'nosotros',   label: 'Nosotros',            roles: ['portada'] },
+  { key: 'hospedajes', label: 'Hospedajes (banner)', roles: ['banner'] },
+  { key: 'galeria',    label: 'Galería de fotos',    roles: ['galeria'] },
 ];
 
 const ROLE_LABELS = {

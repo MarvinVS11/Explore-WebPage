@@ -59,7 +59,8 @@ app.use('/api/config',    require('./routes/config'));
 app.use('/api/navlinks',  require('./routes/navlinks'));
 app.use('/api/reditems',  require('./routes/reditems'));
 app.use('/api/images',    require('./routes/images'));
-app.use('/api/projects',  require('./routes/projects'));
+app.use('/api/projects',   require('./routes/projects'));
+app.use('/api/hospedajes', require('./routes/hospedajes'));
 app.use('/upload',        require('./routes/upload'));
 
 app.get('/health', (_, res) =>

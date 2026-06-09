@@ -5,9 +5,8 @@ import Skeleton from './Skeleton';
 export default function Nosotros() {
   const { data, images, loading } = useSection('nosotros');
 
-  const logo    = images.find(img => img.role === 'logo' && img.isActive !== false);
   const portada = images.find(img => img.role === 'portada' && img.isActive !== false)
-                ?? images.find(img => img.role !== 'logo'   && img.isActive !== false);
+                ?? images.find(img => img.isActive !== false);
 
   if (loading) {
     return (
@@ -43,14 +42,6 @@ export default function Nosotros() {
 
       <div className="nosotros-inner">
         <div className="nosotros-text">
-          {logo && (
-            <div className="nosotros-img">
-              <DynamicImage
-                src={logo.url}
-                alt={logo.alt || 'Explore Occidente'}
-              />
-            </div>
-          )}
           <h2>{data?.title}</h2>
           <p>{data?.body}</p>
           {data?.ctaText && (
