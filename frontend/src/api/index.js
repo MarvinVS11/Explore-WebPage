@@ -60,6 +60,25 @@ export const getSitiosRecreacion = async () => {
   return res.json();
 };
 
+// ─── Restaurantes y Miradores ────────────────────────────────────────────────
+export const getRestaurantesSodas = async () => {
+  const res = await fetch(`${BASE}/api/restaurantes-sodas`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
+export const getMiradoresSitios = async () => {
+  const res = await fetch(`${BASE}/api/miradores-sitios`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
+export const getAreasProtegidas = async () => {
+  const res = await fetch(`${BASE}/api/areas-protegidas`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
 // ─── Helper URL de imágenes ──────────────────────────────────────────────────
 export const getImageUrl = (url) => {
   if (!url) return '/images/placeholder.webp';

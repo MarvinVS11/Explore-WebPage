@@ -124,6 +124,33 @@ export const updateSitioRecreacion  = (id, body) =>
 export const deleteSitioRecreacion  = (id)       =>
   request(`/api/sitios-recreacion/${id}`, { method: 'DELETE' });
 
+// ─── Restaurantes & Sodas ─────────────────────────────────────
+export const getRestaurantesSodas    = ()         => request('/api/restaurantes-sodas');
+export const createRestauranteSoda   = (body)     =>
+  request('/api/restaurantes-sodas', { method: 'POST', body: JSON.stringify(body) });
+export const updateRestauranteSoda   = (id, body) =>
+  request(`/api/restaurantes-sodas/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteRestauranteSoda   = (id)       =>
+  request(`/api/restaurantes-sodas/${id}`, { method: 'DELETE' });
+
+// ─── Miradores & Sitios ───────────────────────────────────────
+export const getMiradoresSitios    = ()         => request('/api/miradores-sitios');
+export const createMiradorSitio    = (body)     =>
+  request('/api/miradores-sitios', { method: 'POST', body: JSON.stringify(body) });
+export const updateMiradorSitio    = (id, body) =>
+  request(`/api/miradores-sitios/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteMiradorSitio    = (id)       =>
+  request(`/api/miradores-sitios/${id}`, { method: 'DELETE' });
+
+// ─── Áreas Protegidas ─────────────────────────────────────────
+export const getAreasProtegidas    = ()         => request('/api/areas-protegidas');
+export const createAreaProtegida   = (body)     =>
+  request('/api/areas-protegidas', { method: 'POST', body: JSON.stringify(body) });
+export const updateAreaProtegida   = (id, body) =>
+  request(`/api/areas-protegidas/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteAreaProtegida   = (id)       =>
+  request(`/api/areas-protegidas/${id}`, { method: 'DELETE' });
+
 // ─── Projects ─────────────────────────────────────────────────
 export const getProyectos   = ()         => request('/api/projects');
 export const createProyecto = (body)     =>
