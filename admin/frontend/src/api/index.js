@@ -89,6 +89,15 @@ export const updateHospedaje  = (id, body) =>
 export const deleteHospedaje  = (id)       =>
   request(`/api/hospedajes/${id}`, { method: 'DELETE' });
 
+// ─── Sitios de Recreación ──────────────────────────────────────
+export const getSitiosRecreacion    = ()         => request('/api/sitios-recreacion');
+export const createSitioRecreacion  = (body)     =>
+  request('/api/sitios-recreacion', { method: 'POST', body: JSON.stringify(body) });
+export const updateSitioRecreacion  = (id, body) =>
+  request(`/api/sitios-recreacion/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteSitioRecreacion  = (id)       =>
+  request(`/api/sitios-recreacion/${id}`, { method: 'DELETE' });
+
 // ─── Projects ─────────────────────────────────────────────────
 export const getProyectos   = ()         => request('/api/projects');
 export const createProyecto = (body)     =>

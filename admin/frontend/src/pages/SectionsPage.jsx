@@ -9,12 +9,13 @@ const ALL_SECTION_LABELS = {
   galeria:     'Galería de fotos',
   red:         'Red de Turismo Sostenible',
   hospedajes:  'Hospedajes',
+  recreacion:  'Sitios de Recreación',
   mapa:        'Mapa Turístico',
   contacto:    'Contacto',
 };
 
 const EXPLORE_HIDDEN = ['servicios'];
-const FUBONO_HIDDEN  = ['hospedajes'];
+const FUBONO_HIDDEN  = ['hospedajes', 'recreacion'];
 
 function ExtraFields({ sectionKey, extra, onChange }) {
   const set = (field, value) => onChange({ ...extra, [field]: value });

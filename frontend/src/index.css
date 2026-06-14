@@ -635,7 +635,7 @@ p {
 .hospedajes-list {
   max-width: 960px;
   margin:    0 auto;
-  padding:   1.5rem 1.5rem 3rem;
+  padding:   1.5rem 1.5rem 6rem;
   display:   flex;
   flex-direction: column;
   gap:       1.5rem;
@@ -773,30 +773,34 @@ p {
   padding:    3rem 0;
 }
 
-.hospedajes-footer {
-  display:         flex;
-  justify-content: flex-end;
-  padding:         1rem 2rem 2.5rem;
-  max-width:       960px;
-  margin:          0 auto;
-}
+.hospedajes-footer { height: 0; padding: 0; overflow: visible; }
 
 .btn-volver {
-  padding:       0.6rem 1.8rem;
-  background:    var(--verde);
-  color:         var(--white);
-  border:        none;
+  position:      fixed;
+  bottom:        2rem;
+  left:          50%;
+  translate:     -50% 0;
+  z-index:       100;
+  padding:       0.65rem 2rem;
+  background:    rgba(10, 61, 46, 0.82);
+  color:         #a8f0eb;
+  border:        1px solid rgba(168, 240, 235, 0.35);
   border-radius: var(--radius-full);
   font-size:     0.9rem;
   font-weight:   600;
   cursor:        pointer;
-  letter-spacing: 0.05em;
-  transition:    background 0.2s ease, transform 0.2s ease;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:    0 4px 20px rgba(0, 0, 0, 0.35);
+  transition:    background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  white-space:   nowrap;
 }
 
 .btn-volver:hover {
-  background: var(--verde-dark);
-  transform:  translateY(-2px);
+  background:  rgba(14, 92, 64, 0.92);
+  transform:   translateY(-2px);
+  box-shadow:  0 6px 28px rgba(0, 0, 0, 0.45);
 }
 
 /* Móvil: animación reducida y layout compacto */
@@ -810,11 +814,7 @@ p {
     max-height: 240px;
   }
   .hospedajes-header { padding: 1.75rem 1.25rem 1.25rem; }
-  .hospedajes-list   { padding: 1rem 1rem 2.5rem; gap: 1rem; }
-  .hospedajes-footer {
-    justify-content: center;
-    padding: 0.75rem 1rem 2rem;
-  }
+  .hospedajes-list   { padding: 1rem 1rem 6rem; gap: 1rem; }
 }
 
 @media (min-width: 768px) {
@@ -832,6 +832,249 @@ p {
   .hospedajes-banner { height: 340px; }
   .hospedaje-card     { grid-template-columns: 1fr 320px; gap: 2.5rem; }
   .hospedaje-card--alt { grid-template-columns: 320px 1fr; }
+}
+
+/* ─── Página Sitios de Recreación ───────────────────────────── */
+.recreacion-page {
+  min-height:           100vh;
+  background:           linear-gradient(145deg, #2d1a00 0%, #5c3a00 35%, #8b5e00 70%, #c4890a 100%);
+  background-attachment: fixed;
+}
+
+.recreacion-banner {
+  position: relative;
+  width:    100%;
+  height:   260px;
+  overflow: hidden;
+}
+
+.recreacion-banner-img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+}
+
+.recreacion-banner-placeholder {
+  width:      100%;
+  height:     100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.recreacion-banner-overlay {
+  position:   absolute;
+  inset:      0;
+  background: linear-gradient(to top, rgba(45, 26, 0, 0.85) 0%, transparent 60%);
+}
+
+.recreacion-banner-title {
+  position:  absolute;
+  bottom:    1.75rem;
+  left:      0;
+  right:     0;
+  text-align: center;
+}
+
+.recreacion-banner-title h1 {
+  font-family:    var(--font-display);
+  font-size:      clamp(1.4rem, 4vw, 2.2rem);
+  font-weight:    700;
+  color:          #ffe5a0;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-shadow:    0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.recreacion-header {
+  max-width:       860px;
+  margin:          0 auto;
+  padding:         2rem 1.5rem 1.25rem;
+  text-align:      center;
+  background:      rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom:   1px solid rgba(255, 255, 255, 0.12);
+}
+
+.recreacion-desc {
+  font-size:   0.95rem;
+  color:       rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  max-width:   680px;
+  margin:      0 auto;
+}
+
+.recreacion-list {
+  max-width:      960px;
+  margin:         0 auto;
+  padding:        1.5rem 1.5rem 6rem;
+  display:        flex;
+  flex-direction: column;
+  gap:            1.5rem;
+}
+
+.recreacion-card {
+  display:         grid;
+  grid-template-columns: 1fr;
+  gap:             1.5rem;
+  padding:         1.75rem;
+  background:      rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border:          1px solid rgba(255, 220, 120, 0.20);
+  border-radius:   16px;
+  box-shadow:      0 4px 24px rgba(0, 0, 0, 0.2);
+  transition:      transform 0.25s ease, box-shadow 0.25s ease,
+                   opacity 0.65s ease, translate 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.recreacion-card:hover {
+  transform:  translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+}
+
+.recreacion-card.recreacion-reveal-left  { opacity: 0; translate: -70px 0; }
+.recreacion-card.recreacion-reveal-right { opacity: 0; translate:  70px 0; }
+
+.recreacion-card.recreacion-reveal-left.recreacion-card-visible,
+.recreacion-card.recreacion-reveal-right.recreacion-card-visible {
+  opacity:   1;
+  translate: 0 0;
+}
+
+.recreacion-img-wrap {
+  border-radius: var(--radius-md);
+  overflow:      hidden;
+  max-height:    280px;
+  border:        1px solid rgba(255, 220, 120, 0.15);
+}
+
+.recreacion-img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+  transition: transform 0.4s ease;
+}
+
+.recreacion-img-wrap:hover .recreacion-img { transform: scale(1.03); }
+
+.recreacion-img-placeholder {
+  width:         100%;
+  height:        220px;
+  background:    rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+}
+
+.recreacion-info { display: flex; flex-direction: column; }
+
+.recreacion-title {
+  font-family:   var(--font-display);
+  font-size:     1.25rem;
+  font-weight:   600;
+  color:         #ffe5a0;
+  margin-bottom: 0.75rem;
+}
+
+.recreacion-description {
+  font-size:     0.92rem;
+  line-height:   1.8;
+  color:         rgba(255, 255, 255, 0.88);
+  margin-bottom: 1.25rem;
+}
+
+.recreacion-actions {
+  display:     flex;
+  align-items: center;
+  gap:         0.75rem;
+  flex-wrap:   wrap;
+  margin-top:  auto;
+}
+
+.recreacion-maps-btn {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           40px;
+  height:          40px;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.15);
+  color:           #ff8a8a;
+  border:          1px solid rgba(255, 255, 255, 0.2);
+  transition:      transform 0.2s ease, background 0.2s ease;
+  flex-shrink:     0;
+}
+
+.recreacion-maps-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform:  scale(1.1);
+}
+
+.recreacion-pin-icon  { width: 22px; height: 22px; }
+
+.recreacion-link-btn {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           0.4rem;
+  padding:       0.45rem 1.1rem;
+  background:    rgba(196, 137, 10, 0.75);
+  color:         #fff;
+  border:        1px solid rgba(255, 200, 80, 0.4);
+  border-radius: var(--radius-full);
+  font-size:     0.85rem;
+  font-weight:   500;
+  backdrop-filter: blur(6px);
+  transition:    background 0.2s ease, transform 0.2s ease;
+}
+
+.recreacion-link-btn:hover {
+  background: rgba(196, 137, 10, 0.95);
+  transform:  translateY(-1px);
+}
+
+.recreacion-link-icon { width: 14px; height: 14px; }
+
+.recreacion-card--skeleton {
+  height:        200px;
+  background:    rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  animation:     pulse 1.5s ease-in-out infinite;
+}
+
+.recreacion-empty {
+  text-align: center;
+  color:      rgba(255, 255, 255, 0.6);
+  padding:    3rem 0;
+}
+
+.recreacion-footer { height: 0; padding: 0; overflow: visible; }
+
+/* Móvil */
+@media (max-width: 767px) {
+  .recreacion-banner { height: 200px; }
+  .recreacion-card { padding: 1.25rem; }
+  .recreacion-card.recreacion-reveal-left  { translate: -35px 0; }
+  .recreacion-card.recreacion-reveal-right { translate:  35px 0; }
+  .recreacion-img-wrap { width: 100%; min-height: 200px; max-height: 240px; }
+  .recreacion-header { padding: 1.5rem 1.25rem 1rem; }
+  .recreacion-list   { padding: 1rem 1rem 6rem; gap: 1rem; }
+}
+
+@media (min-width: 768px) {
+  .recreacion-banner { height: 320px; }
+  .recreacion-card {
+    grid-template-columns: 1fr 1fr;
+    align-items:           start;
+  }
+  .recreacion-card--alt .recreacion-info    { order: 2; }
+  .recreacion-card--alt .recreacion-img-wrap { order: 1; }
+  .recreacion-img-wrap { max-height: 320px; }
+}
+
+@media (min-width: 1024px) {
+  .recreacion-banner { height: 360px; }
+  .recreacion-card      { grid-template-columns: 320px 1fr; gap: 2.5rem; }
+  .recreacion-card--alt { grid-template-columns: 1fr 320px; }
 }
 
 /* ─── Galería Red de Turismo ─────────────────────────────────── */
