@@ -89,6 +89,32 @@ export const updateHospedaje  = (id, body) =>
 export const deleteHospedaje  = (id)       =>
   request(`/api/hospedajes/${id}`, { method: 'DELETE' });
 
+// ─── Documentos ───────────────────────────────────────────────────────────────
+export const getDocumentos    = (category) =>
+  request(`/api/documentos${category ? `?category=${encodeURIComponent(category)}` : ''}`);
+export const createDocumento  = (body)     =>
+  request('/api/documentos', { method: 'POST', body: JSON.stringify(body) });
+export const updateDocumento  = (id, body) =>
+  request(`/api/documentos/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+export const deleteDocumento  = (id)       =>
+  request(`/api/documentos/${id}`, { method: 'DELETE' });
+
+export const uploadDocumento = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(`${BASE}/upload/documento`, {
+    method:  'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
+      'X-Site-Id':   localStorage.getItem('admin_site') || 'explore',
+    },
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al subir documento');
+  return data;
+};
+
 // ─── Sitios de Recreación ──────────────────────────────────────
 export const getSitiosRecreacion    = ()         => request('/api/sitios-recreacion');
 export const createSitioRecreacion  = (body)     =>

@@ -7,6 +7,7 @@ import RedItemsPage  from './pages/RedItemsPage';
 import ProyectosPage   from './pages/ProyectosPage';
 import HospedajesPage       from './pages/HospedajesPage';
 import SitiosRecreacionPage from './pages/SitiosRecreacionPage';
+import DocumentosPage       from './pages/DocumentosPage';
 import ImagesPage    from './pages/ImagesPage';
 import Layout        from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="images"      element={<ImagesPage />} />
           <Route path="hospedajes"         element={<HospedajesPage />} />
           <Route path="sitios-recreacion" element={<SitiosRecreacionPage />} />
+          <Route path="documentos"        element={<DocumentosPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

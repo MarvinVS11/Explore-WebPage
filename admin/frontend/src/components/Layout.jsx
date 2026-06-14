@@ -23,6 +23,7 @@ export default function Layout() {
     { to: '/proyectos',  label: '📋 Proyectos' },
     { to: '/hospedajes',         label: '🏡 Hospedajes' },
     { to: '/sitios-recreacion',  label: '🌳 Sitios de Recreación' },
+    { to: '/documentos',         label: '📄 Documentos' },
     { to: '/reditems',   label: '🌿 Red de Turismo' },
   ];
 

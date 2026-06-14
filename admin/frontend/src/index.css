@@ -518,6 +518,25 @@ td code {
 .badge-active   { background: #ECFDF5; color: #059669; margin-left: 8px; }
 .badge-inactive { background: #F5F5F5; color: #9CA3AF; margin-left: 8px; }
 
+/* ─── Filtro de tags (Documentos) ───────────────── */
+.tag-filter {
+  padding:       0.35rem 1rem;
+  border:        1px solid var(--border);
+  border-radius: var(--radius-full);
+  background:    var(--surface);
+  color:         var(--text-muted);
+  font-size:     0.82rem;
+  cursor:        pointer;
+  transition:    background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tag-filter:hover,
+.tag-filter.active {
+  background:   var(--verde);
+  color:        #fff;
+  border-color: var(--verde);
+}
+
 /* ─── Proyectos admin ────────────────────────────── */
 .link-editor { margin: 1rem 0; }
 

@@ -87,6 +87,8 @@ app.use('/api/reditems',  require('./routes/reditems'));
 app.use('/api/projects',   require('./routes/projects'));
 app.use('/api/hospedajes',        require('./routes/hospedajes'));
 app.use('/api/sitios-recreacion', require('./routes/sitiosRecreacion'));
+app.use('/api/documentos',        require('./routes/documentos'));
+app.use('/api/files',             require('./routes/files'));
 
 app.get('/health', (req, res) =>
   res.json({ status: 'ok', service: 'explore-public-api', time: new Date().toISOString() })

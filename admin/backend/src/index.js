@@ -63,6 +63,8 @@ app.use('/api/images',    require('./routes/images'));
 app.use('/api/projects',   require('./routes/projects'));
 app.use('/api/hospedajes',        require('./routes/hospedajes'));
 app.use('/api/sitios-recreacion', require('./routes/sitiosRecreacion'));
+app.use('/api/documentos',        require('./routes/documentos'));
+app.use('/api/files',             require('./routes/files'));
 app.use('/upload',        require('./routes/upload'));
 
 app.get('/health', (_, res) =>
