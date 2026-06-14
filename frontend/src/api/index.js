@@ -45,6 +45,13 @@ export const getHospedajes = async () => {
   return res.json();
 };
 
+// ─── Sitios de Recreación ────────────────────────────────────────────────────
+export const getSitiosRecreacion = async () => {
+  const res = await fetch(`${BASE}/api/sitios-recreacion`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
 // ─── Helper URL de imágenes ──────────────────────────────────────────────────
 export const getImageUrl = (url) => {
   if (!url) return '/images/placeholder.webp';

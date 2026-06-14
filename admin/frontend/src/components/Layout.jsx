@@ -21,7 +21,8 @@ export default function Layout() {
     { to: '/config',   label: '⚙️ Configuración' },
     { to: '/navlinks',  label: '🔗 Menú' },
     { to: '/proyectos',  label: '📋 Proyectos' },
-    { to: '/hospedajes', label: '🏡 Hospedajes' },
+    { to: '/hospedajes',         label: '🏡 Hospedajes' },
+    { to: '/sitios-recreacion',  label: '🌳 Sitios de Recreación' },
     { to: '/reditems',   label: '🌿 Red de Turismo' },
   ];
 

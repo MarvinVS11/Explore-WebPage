@@ -25,6 +25,7 @@ app.use(cors({
       'http://localhost:5174',
       'http://localhost:5175',
       'http://localhost:5176',
+      'http://localhost:5177',
       process.env.ADMIN_FRONTEND_URL,
     ].filter(Boolean);
     // Permitir todas las URLs de Vercel (previews de release, staging, etc.)
@@ -60,7 +61,8 @@ app.use('/api/navlinks',  require('./routes/navlinks'));
 app.use('/api/reditems',  require('./routes/reditems'));
 app.use('/api/images',    require('./routes/images'));
 app.use('/api/projects',   require('./routes/projects'));
-app.use('/api/hospedajes', require('./routes/hospedajes'));
+app.use('/api/hospedajes',        require('./routes/hospedajes'));
+app.use('/api/sitios-recreacion', require('./routes/sitiosRecreacion'));
 app.use('/upload',        require('./routes/upload'));
 
 app.get('/health', (_, res) =>

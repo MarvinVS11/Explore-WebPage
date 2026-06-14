@@ -85,7 +85,8 @@ app.use('/api/images',    require('./routes/images'));
 app.use('/api/navlinks',  require('./routes/navlinks'));
 app.use('/api/reditems',  require('./routes/reditems'));
 app.use('/api/projects',   require('./routes/projects'));
-app.use('/api/hospedajes', require('./routes/hospedajes'));
+app.use('/api/hospedajes',        require('./routes/hospedajes'));
+app.use('/api/sitios-recreacion', require('./routes/sitiosRecreacion'));
 
 app.get('/health', (req, res) =>
   res.json({ status: 'ok', service: 'explore-public-api', time: new Date().toISOString() })

@@ -4,7 +4,8 @@ import { getImages, createImage, updateImage, deleteImage, uploadFile } from '..
 const SECTIONS = [
   { key: 'hero',       label: 'Banner / Hero',      roles: ['banner'] },
   { key: 'nosotros',   label: 'Nosotros',            roles: ['portada'] },
-  { key: 'hospedajes', label: 'Hospedajes (banner)', roles: ['banner'] },
+  { key: 'hospedajes',  label: 'Hospedajes (banner)',           roles: ['banner'] },
+  { key: 'recreacion', label: 'Sitios de Recreación (banner)', roles: ['banner'] },
   { key: 'galeria',    label: 'Galería de fotos',    roles: ['galeria'] },
 ];
 
