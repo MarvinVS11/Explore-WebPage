@@ -549,6 +549,21 @@ p {
   transform: translateX(0);
 }
 
+.red-card-doc-icon {
+  position:   relative;
+  z-index:    1;
+  flex-shrink: 0;
+  width:       18px;
+  height:      18px;
+  opacity:     0.5;
+  transition:  opacity 0.25s ease, transform 0.25s ease;
+}
+
+.red-card:hover .red-card-doc-icon {
+  opacity:   1;
+  transform: translateY(2px);
+}
+
 /* ─── Galería Nosotros ───────────────────────────────────────── */
 .nosotros-galeria {
   display:               grid;
@@ -1048,6 +1063,174 @@ p {
 }
 
 .recreacion-footer { height: 0; padding: 0; overflow: visible; }
+
+/* ─── Página Documentos ──────────────────────────────────────── */
+.documentos-page {
+  min-height:  100vh;
+  background:  #f4f6f9;
+  padding-bottom: 5rem;
+}
+
+.documentos-header {
+  background:   linear-gradient(135deg, #0a3d2e 0%, #0e5c40 60%, #0ec9c0 100%);
+  padding:      3rem 1.5rem 2.5rem;
+  text-align:   center;
+  color:        #fff;
+}
+
+.documentos-header h1 {
+  font-family:    var(--font-display);
+  font-size:      clamp(1.4rem, 4vw, 2.2rem);
+  font-weight:    700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color:          #a8f0eb;
+  margin-bottom:  0.5rem;
+}
+
+.documentos-subtitle {
+  font-size:  0.95rem;
+  color:      rgba(255,255,255,0.75);
+}
+
+.documentos-cats {
+  display:         flex;
+  flex-wrap:       wrap;
+  gap:             0.5rem;
+  justify-content: center;
+  max-width:       860px;
+  margin:          1.5rem auto 0;
+  padding:         0 1.25rem;
+}
+
+.doc-cat-btn {
+  padding:       0.4rem 1.1rem;
+  border:        1px solid var(--border);
+  border-radius: var(--radius-full);
+  background:    var(--white);
+  color:         var(--text-muted);
+  font-size:     0.85rem;
+  cursor:        pointer;
+  transition:    background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.doc-cat-btn:hover,
+.doc-cat-btn.active {
+  background:   var(--verde);
+  color:        var(--white);
+  border-color: var(--verde);
+}
+
+.documentos-list {
+  max-width:      860px;
+  margin:         1.5rem auto 0;
+  padding:        0 1.25rem;
+  display:        flex;
+  flex-direction: column;
+  gap:            0.75rem;
+}
+
+.doc-card {
+  display:         flex;
+  align-items:     center;
+  gap:             1rem;
+  padding:         1.1rem 1.25rem;
+  background:      var(--white);
+  border:          1px solid var(--border);
+  border-radius:   var(--radius-md);
+  box-shadow:      var(--shadow-sm);
+  text-decoration: none;
+  color:           var(--text);
+  transition:      box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.doc-card:hover {
+  box-shadow:   var(--shadow-md);
+  border-color: var(--verde);
+  transform:    translateY(-2px);
+}
+
+.doc-icon {
+  font-size:   2rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.doc-info {
+  flex:        1;
+  min-width:   0;
+}
+
+.doc-category {
+  display:        inline-block;
+  font-size:      11px;
+  font-weight:    600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color:          var(--verde);
+  margin-bottom:  0.2rem;
+}
+
+.doc-title {
+  font-size:   1rem;
+  font-weight: 600;
+  color:       var(--text);
+  margin:      0 0 0.2rem;
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-desc {
+  font-size:     0.82rem;
+  color:         var(--text-muted);
+  margin:        0;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-filename {
+  font-size:  0.78rem;
+  color:      var(--muted);
+  margin-top: 0.15rem;
+}
+
+.doc-download-icon {
+  flex-shrink: 0;
+  color:       var(--verde);
+  opacity:     0.5;
+  transition:  opacity 0.2s;
+}
+
+.doc-download-icon svg { width: 20px; height: 20px; display: block; }
+
+.doc-card:hover .doc-download-icon { opacity: 1; }
+
+.doc-card--skeleton {
+  height:    70px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.documentos-empty {
+  text-align: center;
+  color:      var(--text-muted);
+  padding:    3rem 0;
+}
+
+.documentos-footer {
+  height: 0; padding: 0; overflow: visible;
+}
+
+/* Documentos móvil */
+@media (max-width: 600px) {
+  .doc-card    { padding: 0.9rem 1rem; }
+  .doc-icon    { font-size: 1.6rem; }
+  .doc-title   { font-size: 0.92rem; }
+  .doc-desc    { display: none; }
+}
 
 /* Móvil */
 @media (max-width: 767px) {

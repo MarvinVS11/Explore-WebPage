@@ -45,6 +45,14 @@ export const getHospedajes = async () => {
   return res.json();
 };
 
+// ─── Documentos ──────────────────────────────────────────────────────────────
+export const getDocumentos = async (category = '') => {
+  const query = category ? `?category=${encodeURIComponent(category)}` : '';
+  const res = await fetch(`${BASE}/api/documentos${query}`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
 // ─── Sitios de Recreación ────────────────────────────────────────────────────
 export const getSitiosRecreacion = async () => {
   const res = await fetch(`${BASE}/api/sitios-recreacion`);
@@ -57,4 +65,17 @@ export const getImageUrl = (url) => {
   if (!url) return '/images/placeholder.webp';
   if (url.startsWith('http')) return url;
   return `${BASE}${url}`;
+};
+
+// ─── Helper URL de documentos ────────────────────────────────────────────────
+// URLs GridFS (/api/files/:id) se sirven desde el backend público con Content-Disposition: inline
+export const getDocumentUrl = (url) => {
+  if (!url) return '#';
+  // URL relativa de GridFS → prefija con la base del API público
+  if (url.startsWith('/api/files/')) return `${BASE}${url}`;
+  // URL Cloudinary legacy: añade fl_inline para que abra en navegador
+  if (url.includes('res.cloudinary.com') && url.includes('/raw/upload/')) {
+    return url.replace('/raw/upload/', '/raw/upload/fl_inline,fl_attachment:false/');
+  }
+  return url;
 };

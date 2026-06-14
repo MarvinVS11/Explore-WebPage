@@ -1,14 +1,15 @@
 import useSection from '../hooks/useSection';
 import useSiteConfig from '../hooks/useSiteConfig';
 import Skeleton from './Skeleton';
+import { getDocumentUrl } from '../api';
 
 const DEFAULT_ICONS = {
-  hospedaje:    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>,
-  recreacion:   <><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></>,
-  aves:         <path d="M22 2l-8.5 8.5M22 2H15M22 2v7M16 8C8 8 4 12 2 22c3-4 6-5 9-5 0 3 2 5 4 5 4 0 6-3.5 6-7 0-2-.5-4-2-5 0 0-1-1-3-1z"/>,
-  senderismo:   <><circle cx="12" cy="5" r="2"/><path d="M5 22l2-8 3 3 2-9 2 9 3-3 2 8"/></>,
-  tour:         <><path d="M3 11l19-9-9 19-2-8-8-2z"/></>,
-  restaurante:  <><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></>,
+  hospedaje:   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>,
+  recreacion:  <><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></>,
+  aves:        <path d="M22 2l-8.5 8.5M22 2H15M22 2v7M16 8C8 8 4 12 2 22c3-4 6-5 9-5 0 3 2 5 4 5 4 0 6-3.5 6-7 0-2-.5-4-2-5 0 0-1-1-3-1z"/>,
+  senderismo:  <><circle cx="12" cy="5" r="2"/><path d="M5 22l2-8 3 3 2-9 2 9 3-3 2 8"/></>,
+  tour:        <><path d="M3 11l19-9-9 19-2-8-8-2z"/></>,
+  restaurante: <><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></>,
 };
 
 function getDefaultIcon(label = '') {
@@ -31,9 +32,19 @@ function ArrowIcon() {
   );
 }
 
+function DownloadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="red-card-doc-icon">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+  );
+}
+
 export default function RedTurismo() {
-  const { data, loading }                     = useSection('red');
-  const { redItems, loading: loadingItems }   = useSiteConfig();
+  const { data, loading }                   = useSection('red');
+  const { redItems, loading: loadingItems } = useSiteConfig();
 
   if (loading || loadingItems) {
     return (
@@ -62,28 +73,40 @@ export default function RedTurismo() {
         </div>
 
         <div className="red-cards">
-          {redItems.map((item) => (
-            <a
-              key={item._id}
-              href={item.href}
-              target={item.type === 'internal' ? '_self' : '_blank'}
-              rel="noreferrer"
-              className="red-card"
-            >
-              <div className="red-card-icon">
-                {item.iconUrl
-                  ? <img src={item.iconUrl} alt="" />
-                  : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      {getDefaultIcon(item.label)}
-                    </svg>
-                  )
-                }
-              </div>
-              <span className="red-card-label">{item.label}</span>
-              <ArrowIcon />
-            </a>
-          ))}
+          {redItems.map((item) => {
+            const hasDoc = Boolean(item.documentUrl);
+            const docUrl = hasDoc ? getDocumentUrl(item.documentUrl) : null;
+            const href   = hasDoc ? docUrl : (item.href || '#');
+            const isExternal = item.type !== 'internal' || hasDoc;
+
+            const handleClick = hasDoc
+              ? (e) => { e.preventDefault(); window.open(docUrl, '_blank', 'noopener,noreferrer'); }
+              : undefined;
+
+            return (
+              <a
+                key={item._id}
+                href={href}
+                target={isExternal ? '_blank' : '_self'}
+                rel="noopener noreferrer"
+                className="red-card"
+                onClick={handleClick}
+              >
+                <div className="red-card-icon">
+                  {item.iconUrl
+                    ? <img src={item.iconUrl} alt="" />
+                    : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        {getDefaultIcon(item.label)}
+                      </svg>
+                    )
+                  }
+                </div>
+                <span className="red-card-label">{item.label}</span>
+                {hasDoc ? <DownloadIcon /> : <ArrowIcon />}
+              </a>
+            );
+          })}
         </div>
       </div>
     </section>
