@@ -33,7 +33,8 @@ function RestaurantesTab() {
     setSaving(true); setMsg('');
     try {
       if (adding) {
-        setItems(p => [...p, await createRestauranteSoda(form)]);
+        const created = await createRestauranteSoda(form);
+        setItems(p => [...p, created]);
       } else {
         const u = await updateRestauranteSoda(editing, form);
         setItems(p => p.map(i => i._id === editing ? u : i));
@@ -168,7 +169,8 @@ function MiradoresTab() {
     setSaving(true); setMsg('');
     try {
       if (adding) {
-        setItems(p => [...p, await createMiradorSitio(form)]);
+        const created = await createMiradorSitio(form);
+        setItems(p => [...p, created]);
       } else {
         const u = await updateMiradorSitio(editing, form);
         setItems(p => p.map(i => i._id === editing ? u : i));
@@ -289,7 +291,8 @@ function AreasTab() {
     setSaving(true); setMsg('');
     try {
       if (adding) {
-        setItems(p => [...p, await createAreaProtegida(form)]);
+        const created = await createAreaProtegida(form);
+        setItems(p => [...p, created]);
       } else {
         const u = await updateAreaProtegida(editing, form);
         setItems(p => p.map(i => i._id === editing ? u : i));

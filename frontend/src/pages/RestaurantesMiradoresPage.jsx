@@ -92,7 +92,7 @@ export default function RestaurantesMiradoresPage() {
       <section className="rest-intro">
         <h2 className="rest-intro-title">Elementos Complementarios de la Red de Turismo Sostenible</h2>
         <p className="rest-intro-desc">
-          {section?.description ||
+          {section?.body ||
             'Descubre los establecimientos, miradores naturales y espacios protegidos que complementan la experiencia turística sostenible de nuestra red.'}
         </p>
       </section>
