@@ -8,14 +8,15 @@ const ALL_SECTION_LABELS = {
   servicios:   'Nuestros Servicios',
   galeria:     'Galería de fotos',
   red:         'Red de Turismo Sostenible',
-  hospedajes:  'Hospedajes',
-  recreacion:  'Sitios de Recreación',
+  hospedajes:    'Hospedajes',
+  recreacion:    'Sitios de Recreación',
+  restaurantes:  'Restaurantes y Miradores',
   mapa:        'Mapa Turístico',
   contacto:    'Contacto',
 };
 
 const EXPLORE_HIDDEN = ['servicios'];
-const FUBONO_HIDDEN  = ['hospedajes', 'recreacion'];
+const FUBONO_HIDDEN  = ['hospedajes', 'recreacion', 'restaurantes'];
 
 function ExtraFields({ sectionKey, extra, onChange }) {
   const set = (field, value) => onChange({ ...extra, [field]: value });

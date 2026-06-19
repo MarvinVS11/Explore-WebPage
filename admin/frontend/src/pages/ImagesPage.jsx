@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { getImages, createImage, updateImage, deleteImage, uploadFile } from '../api';
+import { useSite } from '../context/SiteContext';
 
-const SECTIONS = [
-  { key: 'hero',       label: 'Banner / Hero',      roles: ['banner'] },
-  { key: 'nosotros',   label: 'Nosotros',            roles: ['portada'] },
-  { key: 'hospedajes',  label: 'Hospedajes (banner)',           roles: ['banner'] },
-  { key: 'recreacion', label: 'Sitios de Recreación (banner)', roles: ['banner'] },
-  { key: 'galeria',    label: 'Galería de fotos',    roles: ['galeria'] },
+const ALL_SECTIONS = [
+  { key: 'hero',         label: 'Banner / Hero',                    roles: ['banner'],  sites: ['explore', 'fubono'] },
+  { key: 'nosotros',     label: 'Nosotros',                         roles: ['portada'], sites: ['explore', 'fubono'] },
+  { key: 'hospedajes',   label: 'Hospedajes (banner)',               roles: ['banner'],  sites: ['explore'] },
+  { key: 'recreacion',   label: 'Sitios de Recreación (banner)',     roles: ['banner'],  sites: ['explore'] },
+  { key: 'restaurantes', label: 'Restaurantes y Miradores (banner)', roles: ['banner'],  sites: ['explore'] },
+  { key: 'galeria',      label: 'Galería de fotos',                  roles: ['galeria'], sites: ['explore', 'fubono'] },
 ];
 
 const ROLE_LABELS = {
@@ -20,6 +22,8 @@ const ROLE_LABELS = {
 const EMPTY_FORM = { url: '', publicId: '', role: 'portada', alt: '', order: 0, isActive: true };
 
 export default function ImagesPage() {
+  const { siteId } = useSite();
+  const SECTIONS = ALL_SECTIONS.filter(s => s.sites.includes(siteId));
   const [section,    setSection]    = useState('nosotros');
   const [images,     setImages]     = useState([]);
   const [loading,    setLoading]    = useState(true);

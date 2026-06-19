@@ -7,7 +7,7 @@ const imageSchema = new Schema(
     section:  {
       type: String,
       required: true,
-      enum: ['hero', 'nosotros', 'hospedajes', 'recreacion', 'red', 'galeria', 'footer', 'redes'],
+      enum: ['hero', 'nosotros', 'hospedajes', 'recreacion', 'restaurantes', 'red', 'galeria', 'footer', 'redes'],
     },
     role: {
       type: String,

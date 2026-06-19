@@ -15,17 +15,19 @@ export default function Layout() {
     navigate('/login');
   };
 
-  const navItems = [
-    { to: '/sections', label: '📝 Secciones' },
-    { to: '/images',   label: '🖼️ Imágenes' },
-    { to: '/config',   label: '⚙️ Configuración' },
-    { to: '/navlinks',  label: '🔗 Menú' },
-    { to: '/proyectos',  label: '📋 Proyectos' },
-    { to: '/hospedajes',         label: '🏡 Hospedajes' },
-    { to: '/sitios-recreacion',  label: '🌳 Sitios de Recreación' },
-    { to: '/documentos',         label: '📄 Documentos' },
-    { to: '/reditems',   label: '🌿 Red de Turismo' },
+  const allNavItems = [
+    { to: '/sections',               label: '📝 Secciones',                  sites: ['explore', 'fubono'] },
+    { to: '/images',                 label: '🖼️ Imágenes',                   sites: ['explore', 'fubono'] },
+    { to: '/config',                 label: '⚙️ Configuración',              sites: ['explore', 'fubono'] },
+    { to: '/navlinks',               label: '🔗 Menú',                       sites: ['explore', 'fubono'] },
+    { to: '/proyectos',              label: '📋 Proyectos',                   sites: ['fubono'] },
+    { to: '/hospedajes',             label: '🏡 Hospedajes',                  sites: ['explore'] },
+    { to: '/sitios-recreacion',      label: '🌳 Sitios de Recreación',        sites: ['explore'] },
+    { to: '/documentos',             label: '📄 Documentos',                  sites: ['explore'] },
+    { to: '/restaurantes-miradores', label: '🍽️ Restaurantes y Miradores',   sites: ['explore'] },
+    { to: '/reditems',               label: '🌿 Red de Turismo',              sites: ['explore'] },
   ];
+  const navItems = allNavItems.filter(i => i.sites.includes(siteId));
 
   return (
     <div className="admin-layout">
