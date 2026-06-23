@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useSite, SITES } from '../context/SiteContext.jsx';
+import useInactivityLogout from '../hooks/useInactivityLogout.js';
 
 export default function Layout() {
   const navigate  = useNavigate();
   const email     = localStorage.getItem('admin_email') || 'Admin';
-  const [open, setOpen]         = useState(false);
+  const [open,     setOpen]     = useState(false);
   const [siteOpen, setSiteOpen] = useState(false);
+  const [warning,  setWarning]  = useState(false);
   const { siteId, currentSite, switchSite } = useSite();
+
+  useInactivityLogout({
+    onWarning: () => setWarning(true),
+    onLogout:  () => setWarning(false),
+  });
 
   const logout = () => {
     localStorage.removeItem('admin_token');
@@ -110,6 +117,14 @@ export default function Layout() {
       <main className="admin-content">
         <Outlet key={siteId} />
       </main>
+
+      {/* ── Aviso de inactividad ─────────────────────── */}
+      {warning && (
+        <div className="inactivity-banner">
+          <span>⚠️ La sesión se cerrará en 1 minuto por inactividad.</span>
+          <button onClick={() => setWarning(false)}>Seguir activo</button>
+        </div>
+      )}
 
     </div>
   );
