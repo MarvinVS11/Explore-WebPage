@@ -4,33 +4,33 @@ import {
   getMiradoresSitios,   createMiradorSitio,    updateMiradorSitio,    deleteMiradorSitio,
   getAreasProtegidas,   createAreaProtegida,   updateAreaProtegida,   deleteAreaProtegida,
 } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 // ─── Restaurantes & Sodas ────────────────────────────────────────────────────
 const EMPTY_REST = { nombre: '', telefono: '', distrito: '', canton: '', order: 0, isVisible: true };
 
 function RestaurantesTab() {
+  const toast = useToast();
   const [items,   setItems]   = useState([]);
   const [editing, setEditing] = useState(null);
   const [adding,  setAdding]  = useState(false);
   const [form,    setForm]    = useState(EMPTY_REST);
   const [saving,  setSaving]  = useState(false);
-  const [msg,     setMsg]     = useState('');
   const [loading, setLoading] = useState(true);
 
-  const load = () => getRestaurantesSodas().then(setItems).catch(e => setMsg('❌ ' + e.message)).finally(() => setLoading(false));
+  const load = () => getRestaurantesSodas().then(setItems).catch(e => toast(e.message, 'error')).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
-  const startAdd  = () => { setAdding(true); setEditing(null); setForm({ ...EMPTY_REST, order: items.length + 1 }); setMsg(''); };
+  const startAdd  = () => { setAdding(true); setEditing(null); setForm({ ...EMPTY_REST, order: items.length + 1 }); };
   const startEdit = (item) => {
     setEditing(item._id); setAdding(false);
     setForm({ nombre: item.nombre, telefono: item.telefono || '', distrito: item.distrito || '', canton: item.canton || '', order: item.order, isVisible: item.isVisible });
-    setMsg('');
   };
-  const cancel = () => { setEditing(null); setAdding(false); setMsg(''); };
+  const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleSave = async () => {
-    if (!form.nombre.trim()) { setMsg('❌ El nombre es obligatorio'); return; }
-    setSaving(true); setMsg('');
+    if (!form.nombre.trim()) { toast('El nombre es obligatorio', 'error'); return; }
+    setSaving(true);
     try {
       if (adding) {
         const created = await createRestauranteSoda(form);
@@ -39,22 +39,21 @@ function RestaurantesTab() {
         const u = await updateRestauranteSoda(editing, form);
         setItems(p => p.map(i => i._id === editing ? u : i));
       }
-      cancel(); setMsg('✅ Guardado');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      cancel(); toast('Guardado', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar este registro?')) return;
-    try { await deleteRestauranteSoda(id); setItems(p => p.filter(i => i._id !== id)); setMsg('✅ Eliminado'); }
-    catch (err) { setMsg('❌ ' + err.message); }
+    try { await deleteRestauranteSoda(id); setItems(p => p.filter(i => i._id !== id)); toast('Eliminado', 'success'); }
+    catch (err) { toast(err.message, 'error'); }
   };
 
   const field = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
 
   return (
     <>
-      {msg && <p className="status-msg">{msg}</p>}
       {!adding && !editing && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
           <button className="btn-add" onClick={startAdd}>+ Agregar restaurante / soda</button>
@@ -145,28 +144,27 @@ function RestaurantesTab() {
 const EMPTY_MIR = { sitio: '', canton: '', order: 0, isVisible: true };
 
 function MiradoresTab() {
+  const toast = useToast();
   const [items,   setItems]   = useState([]);
   const [editing, setEditing] = useState(null);
   const [adding,  setAdding]  = useState(false);
   const [form,    setForm]    = useState(EMPTY_MIR);
   const [saving,  setSaving]  = useState(false);
-  const [msg,     setMsg]     = useState('');
   const [loading, setLoading] = useState(true);
 
-  const load = () => getMiradoresSitios().then(setItems).catch(e => setMsg('❌ ' + e.message)).finally(() => setLoading(false));
+  const load = () => getMiradoresSitios().then(setItems).catch(e => toast(e.message, 'error')).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
-  const startAdd  = () => { setAdding(true); setEditing(null); setForm({ ...EMPTY_MIR, order: items.length + 1 }); setMsg(''); };
+  const startAdd  = () => { setAdding(true); setEditing(null); setForm({ ...EMPTY_MIR, order: items.length + 1 }); };
   const startEdit = (item) => {
     setEditing(item._id); setAdding(false);
     setForm({ sitio: item.sitio, canton: item.canton || '', order: item.order, isVisible: item.isVisible });
-    setMsg('');
   };
-  const cancel = () => { setEditing(null); setAdding(false); setMsg(''); };
+  const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleSave = async () => {
-    if (!form.sitio.trim()) { setMsg('❌ El nombre del sitio es obligatorio'); return; }
-    setSaving(true); setMsg('');
+    if (!form.sitio.trim()) { toast('El nombre del sitio es obligatorio', 'error'); return; }
+    setSaving(true);
     try {
       if (adding) {
         const created = await createMiradorSitio(form);
@@ -175,22 +173,21 @@ function MiradoresTab() {
         const u = await updateMiradorSitio(editing, form);
         setItems(p => p.map(i => i._id === editing ? u : i));
       }
-      cancel(); setMsg('✅ Guardado');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      cancel(); toast('Guardado', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar este registro?')) return;
-    try { await deleteMiradorSitio(id); setItems(p => p.filter(i => i._id !== id)); setMsg('✅ Eliminado'); }
-    catch (err) { setMsg('❌ ' + err.message); }
+    try { await deleteMiradorSitio(id); setItems(p => p.filter(i => i._id !== id)); toast('Eliminado', 'success'); }
+    catch (err) { toast(err.message, 'error'); }
   };
 
   const field = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
 
   return (
     <>
-      {msg && <p className="status-msg">{msg}</p>}
       {!adding && !editing && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
           <button className="btn-add" onClick={startAdd}>+ Agregar mirador / sitio</button>
@@ -267,28 +264,27 @@ function MiradoresTab() {
 const EMPTY_AREA = { nombre: '', order: 0, isVisible: true };
 
 function AreasTab() {
+  const toast = useToast();
   const [items,   setItems]   = useState([]);
   const [editing, setEditing] = useState(null);
   const [adding,  setAdding]  = useState(false);
   const [form,    setForm]    = useState(EMPTY_AREA);
   const [saving,  setSaving]  = useState(false);
-  const [msg,     setMsg]     = useState('');
   const [loading, setLoading] = useState(true);
 
-  const load = () => getAreasProtegidas().then(setItems).catch(e => setMsg('❌ ' + e.message)).finally(() => setLoading(false));
+  const load = () => getAreasProtegidas().then(setItems).catch(e => toast(e.message, 'error')).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
-  const startAdd  = () => { setAdding(true); setEditing(null); setForm({ ...EMPTY_AREA, order: items.length + 1 }); setMsg(''); };
+  const startAdd  = () => { setAdding(true); setEditing(null); setForm({ ...EMPTY_AREA, order: items.length + 1 }); };
   const startEdit = (item) => {
     setEditing(item._id); setAdding(false);
     setForm({ nombre: item.nombre, order: item.order, isVisible: item.isVisible });
-    setMsg('');
   };
-  const cancel = () => { setEditing(null); setAdding(false); setMsg(''); };
+  const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleSave = async () => {
-    if (!form.nombre.trim()) { setMsg('❌ El nombre es obligatorio'); return; }
-    setSaving(true); setMsg('');
+    if (!form.nombre.trim()) { toast('El nombre es obligatorio', 'error'); return; }
+    setSaving(true);
     try {
       if (adding) {
         const created = await createAreaProtegida(form);
@@ -297,20 +293,19 @@ function AreasTab() {
         const u = await updateAreaProtegida(editing, form);
         setItems(p => p.map(i => i._id === editing ? u : i));
       }
-      cancel(); setMsg('✅ Guardado');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      cancel(); toast('Guardado', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar este registro?')) return;
-    try { await deleteAreaProtegida(id); setItems(p => p.filter(i => i._id !== id)); setMsg('✅ Eliminado'); }
-    catch (err) { setMsg('❌ ' + err.message); }
+    try { await deleteAreaProtegida(id); setItems(p => p.filter(i => i._id !== id)); toast('Eliminado', 'success'); }
+    catch (err) { toast(err.message, 'error'); }
   };
 
   return (
     <>
-      {msg && <p className="status-msg">{msg}</p>}
       {!adding && !editing && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
           <button className="btn-add" onClick={startAdd}>+ Agregar área protegida</button>

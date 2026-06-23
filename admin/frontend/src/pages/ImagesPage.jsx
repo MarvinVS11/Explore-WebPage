@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getImages, createImage, updateImage, deleteImage, uploadFile } from '../api';
 import { useSite } from '../context/SiteContext';
+import { useToast } from '../context/ToastContext.jsx';
 
 const ALL_SECTIONS = [
   { key: 'hero',         label: 'Banner / Hero',                    roles: ['banner'],  sites: ['explore', 'fubono'] },
@@ -23,11 +24,11 @@ const EMPTY_FORM = { url: '', publicId: '', role: 'portada', alt: '', order: 0, 
 
 export default function ImagesPage() {
   const { siteId } = useSite();
+  const toast = useToast();
   const SECTIONS = ALL_SECTIONS.filter(s => s.sites.includes(siteId));
   const [section,    setSection]    = useState('nosotros');
   const [images,     setImages]     = useState([]);
   const [loading,    setLoading]    = useState(true);
-  const [msg,        setMsg]        = useState('');
   const [form,       setForm]       = useState(EMPTY_FORM);
   const [saving,     setSaving]     = useState(false);
   const [uploading,  setUploading]  = useState(false);
@@ -42,12 +43,11 @@ export default function ImagesPage() {
 
   const loadImages = async () => {
     setLoading(true);
-    setMsg('');
     try {
       const data = await getImages(section);
       setImages(data);
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -57,12 +57,11 @@ export default function ImagesPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    setMsg('');
     try {
       const { url, publicId } = await uploadFile(file, 'image');
       setForm(prev => ({ ...prev, url, publicId: publicId || '' }));
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -70,23 +69,22 @@ export default function ImagesPage() {
   };
 
   const handleSave = async () => {
-    if (!form.url.trim()) { setMsg('❌ La URL de la imagen es requerida'); return; }
+    if (!form.url.trim()) { toast('La URL de la imagen es requerida', 'error'); return; }
     setSaving(true);
-    setMsg('');
     try {
       if (editingId) {
         const updated = await updateImage(editingId, form);
         setImages(prev => prev.map(img => img._id === editingId ? updated : img));
-        setMsg('✅ Imagen actualizada');
+        toast('Imagen actualizada', 'success');
       } else {
         const created = await createImage({ ...form, section });
         setImages(prev => [...prev, created]);
-        setMsg('✅ Imagen agregada');
+        toast('Imagen agregada', 'success');
       }
       setForm(EMPTY_FORM);
       setEditingId(null);
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -95,22 +93,20 @@ export default function ImagesPage() {
   const handleEdit = (img) => {
     setEditingId(img._id);
     setForm({ url: img.url, publicId: img.publicId || '', role: img.role, alt: img.alt || '', order: img.order, isActive: img.isActive });
-    setMsg('');
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Eliminar esta imagen?')) return;
-    setMsg('');
     try {
       await deleteImage(id);
       setImages(prev => prev.filter(img => img._id !== id));
-      setMsg('✅ Imagen eliminada');
+      toast('Imagen eliminada', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     }
   };
 
-  const cancelEdit = () => { setEditingId(null); setForm(EMPTY_FORM); setMsg(''); };
+  const cancelEdit = () => { setEditingId(null); setForm(EMPTY_FORM); };
 
   return (
     <div className="page">
@@ -128,8 +124,6 @@ export default function ImagesPage() {
           </button>
         ))}
       </div>
-
-      {msg && <p className="status-msg">{msg}</p>}
 
       {/* Lista de imágenes */}
       {loading ? (
