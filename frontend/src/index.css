@@ -236,26 +236,39 @@ p {
 
 /* Menú móvil desplegable */
 @keyframes nav-item-in {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0);    }
+  from { transform: translateX(105%); }
+  to   { transform: translateX(0);    }
+}
+@keyframes nav-item-out {
+  from { transform: translateX(0);    }
+  to   { transform: translateX(105%); }
 }
 
 .navbar-mobile {
   display:        none;
   flex-direction: column;
-  background:     var(--white);
   border-top:     0.5px solid var(--border);
-  padding:        0.5rem 0;
+  overflow:       hidden; /* recorta los ítems mientras animan fuera del borde */
 }
 
 .navbar-mobile.active {
   display: flex;
 }
 
+/* Entrada: cada ítem (fondo + texto) emerge de derecha a izquierda */
 .navbar-mobile.active li {
-  opacity:         0;
-  animation:       nav-item-in 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation:       nav-item-in 0.34s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   animation-delay: calc(var(--i) * 0.07s);
+}
+
+/* Salida: en orden inverso, el último sale primero */
+.navbar-mobile.closing li {
+  animation:       nav-item-out 0.28s cubic-bezier(0.55, 0, 1, 0.45) both;
+  animation-delay: calc((var(--total) - var(--i) - 1) * 0.06s);
+}
+
+.navbar-mobile li {
+  background: var(--white);
 }
 
 .navbar-mobile li a {
