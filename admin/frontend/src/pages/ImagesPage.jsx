@@ -30,11 +30,19 @@ export default function ImagesPage() {
   const [images,     setImages]     = useState([]);
   const [loading,    setLoading]    = useState(true);
   const [form,       setForm]       = useState(EMPTY_FORM);
-  const [saving,     setSaving]     = useState(false);
-  const [uploading,  setUploading]  = useState(false);
-  const [editingId,  setEditingId]  = useState(null);
+  const [saving,      setSaving]     = useState(false);
+  const [uploading,   setUploading]  = useState(false);
+  const [editingId,   setEditingId]  = useState(null);
+  const [previewUrl,  setPreviewUrl] = useState('');
   const fileRef  = useRef();
   const formRef  = useRef();
+
+  // Debounce preview so rapid URL keystrokes don't fire network requests continuously
+  useEffect(() => {
+    if (!form.url) { setPreviewUrl(''); return; }
+    const t = setTimeout(() => setPreviewUrl(form.url), 450);
+    return () => clearTimeout(t);
+  }, [form.url]);
 
   const currentSection = SECTIONS.find(s => s.key === section);
 
@@ -64,6 +72,7 @@ export default function ImagesPage() {
     try {
       const { url, publicId } = await uploadFile(file, 'image');
       setForm(prev => ({ ...prev, url, publicId: publicId || '' }));
+      setPreviewUrl(url);
     } catch (err) {
       toast(err.message, 'error');
     } finally {
@@ -97,6 +106,7 @@ export default function ImagesPage() {
   const handleEdit = (img) => {
     setEditingId(img._id);
     setForm({ url: img.url, publicId: img.publicId || '', role: img.role, alt: img.alt || '', order: img.order, isActive: img.isActive });
+    setPreviewUrl(img.url);
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   };
 
@@ -111,7 +121,7 @@ export default function ImagesPage() {
     }
   };
 
-  const cancelEdit = () => { setEditingId(null); setForm(EMPTY_FORM); };
+  const cancelEdit = () => { setEditingId(null); setForm(EMPTY_FORM); setPreviewUrl(''); };
 
   return (
     <div className="page">
@@ -123,7 +133,7 @@ export default function ImagesPage() {
           <button
             key={s.key}
             className={'tab-btn' + (section === s.key ? ' active' : '')}
-            onClick={() => { setSection(s.key); setForm({ ...EMPTY_FORM, role: s.roles[0] }); setEditingId(null); }}
+            onClick={() => { setSection(s.key); setForm({ ...EMPTY_FORM, role: s.roles[0] }); setEditingId(null); setPreviewUrl(''); }}
           >
             {s.label}
           </button>
@@ -180,16 +190,15 @@ export default function ImagesPage() {
           <span className="upload-hint">JPG, PNG, WebP · máx 10 MB</span>
         </div>
 
-        {/* Preview */}
-        {form.url && (
+        {/* Preview — uses debounced URL to avoid rapid network requests while typing */}
+        {previewUrl && (
           <div className="media-preview">
             <img
-              src={form.url}
+              src={previewUrl}
               alt="preview"
               style={{ display: 'block', width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 6 }}
-              onError={e => { e.target.onerror = null; e.target.src = '/images/placeholder.webp'; }}
+              onError={e => { e.target.onerror = null; e.target.src = ''; e.target.style.display = 'none'; }}
             />
-            <p className="media-url">{form.url}</p>
           </div>
         )}
 
