@@ -843,8 +843,9 @@ td code {
 .img-row--inactive { opacity: 0.55; }
 
 .img-thumb {
+  display: block;
   width: 72px;
-  height: 52px;
+  height: 52px !important;
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;

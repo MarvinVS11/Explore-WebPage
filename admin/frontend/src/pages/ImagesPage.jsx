@@ -33,25 +33,29 @@ export default function ImagesPage() {
   const [saving,     setSaving]     = useState(false);
   const [uploading,  setUploading]  = useState(false);
   const [editingId,  setEditingId]  = useState(null);
-  const fileRef = useRef();
+  const fileRef  = useRef();
+  const formRef  = useRef();
 
   const currentSection = SECTIONS.find(s => s.key === section);
 
   useEffect(() => {
-    loadImages();
-  }, [section]);
+    let cancelled = false;
 
-  const loadImages = async () => {
-    setLoading(true);
-    try {
-      const data = await getImages(section);
-      setImages(data);
-    } catch (err) {
-      toast(err.message, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const load = async () => {
+      setLoading(true);
+      try {
+        const data = await getImages(section);
+        if (!cancelled) setImages(data);
+      } catch (err) {
+        if (!cancelled) toast(err.message, 'error');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
+  }, [section]);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -93,6 +97,7 @@ export default function ImagesPage() {
   const handleEdit = (img) => {
     setEditingId(img._id);
     setForm({ url: img.url, publicId: img.publicId || '', role: img.role, alt: img.alt || '', order: img.order, isActive: img.isActive });
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   };
 
   const handleDelete = async (id) => {
@@ -161,7 +166,7 @@ export default function ImagesPage() {
       )}
 
       {/* Formulario agregar / editar */}
-      <div className="card" style={{ marginTop: 24 }}>
+      <div ref={formRef} className="card" style={{ marginTop: 24 }}>
         <h3 className="upload-card-title">
           {editingId ? '✏️ Editar imagen' : '➕ Agregar imagen'}
         </h3>
@@ -177,13 +182,14 @@ export default function ImagesPage() {
 
         {/* Preview */}
         {form.url && (
-          <div className="media-preview" style={{ marginBottom: 12 }}>
+          <div className="media-preview">
             <img
               src={form.url}
               alt="preview"
-              style={{ maxHeight: 120, maxWidth: '100%', borderRadius: 6, objectFit: 'cover' }}
+              style={{ display: 'block', width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 6 }}
               onError={e => { e.target.onerror = null; e.target.src = '/images/placeholder.webp'; }}
             />
+            <p className="media-url">{form.url}</p>
           </div>
         )}
 
