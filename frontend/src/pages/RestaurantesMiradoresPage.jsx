@@ -99,108 +99,114 @@ export default function RestaurantesMiradoresPage() {
 
       {/* ── Tabla 1: Restaurantes & Sodas ─────────────────────── */}
       <section className="rest-section">
-        <div className="rest-section-header rest-header-green">
-          <span className="rest-section-icon">🍽️</span>
-          <h3>Restaurantes &amp; Sodas</h3>
-        </div>
-        {restaurantes.length === 0 ? (
-          <p className="rest-empty">No hay establecimientos registrados aún.</p>
-        ) : (
-          <div className="rest-table-wrap">
-            <table className="rest-table">
-              <thead>
-                <tr>
-                  <th>Restaurante &amp; Soda</th>
-                  <th><PhoneIcon /> Teléfono</th>
-                  <th><LocationIcon /> Distrito &amp; Cantón</th>
-                </tr>
-              </thead>
-              <tbody>
-                {restaurantes.map((r) => (
-                  <tr key={r._id}>
-                    <td data-label="Restaurante & Soda">
-                      <span className="rest-name">{r.nombre}</span>
-                    </td>
-                    <td data-label="Teléfono">
-                      {r.telefono
-                        ? <a href={`tel:${r.telefono}`} className="rest-tel">{r.telefono}</a>
-                        : <span className="rest-na">—</span>}
-                    </td>
-                    <td data-label="Distrito & Cantón">
-                      {[r.distrito, r.canton].filter(Boolean).join(', ') || <span className="rest-na">—</span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="rest-section-box">
+          <div className="rest-section-header rest-header-green">
+            <span className="rest-section-icon">🍽️</span>
+            <h3>Restaurantes &amp; Sodas</h3>
           </div>
-        )}
+          {restaurantes.length === 0 ? (
+            <p className="rest-empty">No hay establecimientos registrados aún.</p>
+          ) : (
+            <div className="rest-table-wrap">
+              <table className="rest-table">
+                <thead>
+                  <tr>
+                    <th>Restaurante &amp; Soda</th>
+                    <th><PhoneIcon /> Teléfono</th>
+                    <th><LocationIcon /> Distrito &amp; Cantón</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {restaurantes.map((r) => (
+                    <tr key={r._id}>
+                      <td data-label="Restaurante & Soda">
+                        <span className="rest-name">{r.nombre}</span>
+                      </td>
+                      <td data-label="Teléfono">
+                        {r.telefono
+                          ? <a href={`tel:${r.telefono}`} className="rest-tel">{r.telefono}</a>
+                          : <span className="rest-na">—</span>}
+                      </td>
+                      <td data-label="Distrito & Cantón">
+                        {[r.distrito, r.canton].filter(Boolean).join(', ') || <span className="rest-na">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ── Tabla 2: Miradores & Sitios ───────────────────────── */}
       <section className="rest-section">
-        <div className="rest-section-header rest-header-teal">
-          <span className="rest-section-icon">🏔️</span>
-          <h3>Miradores y Sitios de Recreación</h3>
-        </div>
-        {miradores.length === 0 ? (
-          <p className="rest-empty">No hay miradores registrados aún.</p>
-        ) : (
-          <div className="rest-table-wrap">
-            <table className="rest-table">
-              <thead>
-                <tr>
-                  <th>Sitio</th>
-                  <th><LocationIcon /> Cantón</th>
-                </tr>
-              </thead>
-              <tbody>
-                {miradores.map((m) => (
-                  <tr key={m._id}>
-                    <td data-label="Sitio">
-                      <span className="rest-name">{m.sitio}</span>
-                    </td>
-                    <td data-label="Cantón">
-                      {m.canton || <span className="rest-na">—</span>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="rest-section-box">
+          <div className="rest-section-header rest-header-teal">
+            <span className="rest-section-icon">🏔️</span>
+            <h3>Miradores y Sitios de Recreación</h3>
           </div>
-        )}
+          {miradores.length === 0 ? (
+            <p className="rest-empty">No hay miradores registrados aún.</p>
+          ) : (
+            <div className="rest-table-wrap">
+              <table className="rest-table">
+                <thead>
+                  <tr>
+                    <th>Sitio</th>
+                    <th><LocationIcon /> Cantón</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {miradores.map((m) => (
+                    <tr key={m._id}>
+                      <td data-label="Sitio">
+                        <span className="rest-name">{m.sitio}</span>
+                      </td>
+                      <td data-label="Cantón">
+                        {m.canton || <span className="rest-na">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ── Tabla 3: Áreas Silvestres Protegidas ──────────────── */}
       <section className="rest-section">
-        <div className="rest-section-header rest-header-earth">
-          <TreeIcon />
-          <h3>Áreas Silvestres Protegidas Cercanas</h3>
-        </div>
-        {areas.length === 0 ? (
-          <p className="rest-empty">No hay áreas protegidas registradas aún.</p>
-        ) : (
-          <div className="rest-table-wrap">
-            <table className="rest-table rest-table-single">
-              <thead>
-                <tr>
-                  <th>Área Silvestre Protegida</th>
-                </tr>
-              </thead>
-              <tbody>
-                {areas.map((a) => (
-                  <tr key={a._id}>
-                    <td data-label="Área Silvestre Protegida">
-                      <span className="rest-name rest-area-name">
-                        <TreeIcon /> {a.nombre}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="rest-section-box">
+          <div className="rest-section-header rest-header-earth">
+            <TreeIcon />
+            <h3>Áreas Silvestres Protegidas Cercanas</h3>
           </div>
-        )}
+          {areas.length === 0 ? (
+            <p className="rest-empty">No hay áreas protegidas registradas aún.</p>
+          ) : (
+            <div className="rest-table-wrap">
+              <table className="rest-table rest-table-single">
+                <thead>
+                  <tr>
+                    <th>Área Silvestre Protegida</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {areas.map((a) => (
+                    <tr key={a._id}>
+                      <td data-label="Área Silvestre Protegida">
+                        <span className="rest-name rest-area-name">
+                          <TreeIcon /> {a.nombre}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ── Footer flotante: botón Volver ─────────────────────── */}
