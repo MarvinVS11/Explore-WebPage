@@ -55,8 +55,8 @@ export default function Navbar() {
 
       {/* Menú móvil desplegable */}
       <ul className={`navbar-mobile ${menuOpen ? 'active' : ''}`}>
-        {items.map((item) => (
-          <li key={item._id || item.href}>
+        {items.map((item, i) => (
+          <li key={item._id || item.href} style={{ '--i': i }}>
             <a href={item.href} onClick={() => setMenuOpen(false)}>
               {item.label}
             </a>
