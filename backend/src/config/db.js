@@ -35,8 +35,9 @@ const connectDB = async () => {
   }
 
   const mainOptions = {
-    serverSelectionTimeoutMS: 10000,
-    socketTimeoutMS: 45000,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS:          30000,
+    connectTimeoutMS:         8000,
   };
 
   try {

@@ -18,7 +18,12 @@ const { seedIfEmpty } = require('./seeds/seed');
 let dbPromise = null;
 function ensureDB() {
   if (!dbPromise) {
-    dbPromise = connectDB().then(() => seedIfEmpty());
+    dbPromise = connectDB()
+      .then(() => seedIfEmpty())
+      .catch(err => {
+        dbPromise = null; // permite reintentar en el siguiente request
+        throw err;
+      });
   }
   return dbPromise;
 }
