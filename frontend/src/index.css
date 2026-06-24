@@ -247,8 +247,13 @@ p {
 .navbar-mobile {
   display:        none;
   flex-direction: column;
-  border-top:     0.5px solid var(--border);
-  overflow:       hidden; /* recorta los ítems mientras animan fuera del borde */
+  position:       absolute;  /* fuera del flujo → el fondo del nav no la cubre */
+  left:           0;
+  right:          0;
+  top:            100%;      /* justo debajo de la barra */
+  z-index:        99;
+  overflow:       hidden;
+  box-shadow:     0 6px 20px rgba(0,0,0,0.08);
 }
 
 .navbar-mobile.active {
