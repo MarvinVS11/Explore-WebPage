@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   getProyectos, createProyecto, updateProyecto, deleteProyecto, uploadProyectoImage,
 } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY_LINK = { label: '', href: '', isPrimary: false };
 
@@ -109,19 +110,19 @@ function ImageUploader({ projectId, side, currentUrl, onUploaded }) {
 }
 
 export default function ProyectosPage() {
+  const toast = useToast();
   const [projects, setProjects] = useState([]);
   const [editing,  setEditing]  = useState(null);
   const [adding,   setAdding]   = useState(false);
   const [form,     setForm]     = useState(EMPTY_PROJECT);
   const [links,    setLinks]    = useState([]);
   const [saving,   setSaving]   = useState(false);
-  const [msg,      setMsg]      = useState('');
   const [loading,  setLoading]  = useState(true);
 
   const load = () =>
     getProyectos()
       .then(setProjects)
-      .catch(err => setMsg('❌ ' + err.message))
+      .catch(err => toast(err.message, 'error'))
       .finally(() => setLoading(false));
 
   useEffect(() => { load(); }, []);
@@ -131,7 +132,6 @@ export default function ProyectosPage() {
     setEditing(null);
     setForm({ ...EMPTY_PROJECT, order: projects.length + 1 });
     setLinks([]);
-    setMsg('');
   };
 
   const startEdit = (p) => {
@@ -144,15 +144,13 @@ export default function ProyectosPage() {
       isVisible:   p.isVisible,
     });
     setLinks(p.links || []);
-    setMsg('');
   };
 
   const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleSave = async () => {
-    if (!form.title.trim()) { setMsg('❌ El título es obligatorio'); return; }
+    if (!form.title.trim()) { toast('El título es obligatorio', 'error'); return; }
     setSaving(true);
-    setMsg('');
     try {
       const cleanLinks = links.map(({ _id, ...rest }) => rest);
       const body = { ...form, links: cleanLinks };
@@ -164,9 +162,9 @@ export default function ProyectosPage() {
         setProjects(prev => prev.map(p => p._id === editing ? updated : p));
       }
       cancel();
-      setMsg('✅ Guardado correctamente');
+      toast('Guardado correctamente', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -177,9 +175,9 @@ export default function ProyectosPage() {
     try {
       await deleteProyecto(id);
       setProjects(prev => prev.filter(p => p._id !== id));
-      setMsg('✅ Proyecto eliminado');
+      toast('Proyecto eliminado', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -205,7 +203,6 @@ export default function ProyectosPage() {
           <button className="btn-add" onClick={startAdd}>+ Nuevo proyecto</button>
         )}
       </div>
-      {msg && <p className="status-msg">{msg}</p>}
 
       {/* ── Formulario ── */}
       {isFormOpen && (

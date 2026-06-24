@@ -537,6 +537,51 @@ td code {
   border-color: var(--verde);
 }
 
+/* ─── Animación toast ───────────────────────────── */
+@keyframes toast-in {
+  from { opacity: 0; translate: 0 -12px; }
+  to   { opacity: 1; translate: 0 0;     }
+}
+
+/* ─── Banner de inactividad ─────────────────────── */
+.inactivity-banner {
+  position:        fixed;
+  bottom:          1.5rem;
+  left:            50%;
+  translate:       -50% 0;
+  z-index:         9999;
+  display:         flex;
+  align-items:     center;
+  gap:             1rem;
+  background:      #7c2d12;
+  color:           #fef3c7;
+  border:          1px solid #b45309;
+  border-radius:   10px;
+  padding:         0.85rem 1.25rem;
+  box-shadow:      0 8px 24px rgba(0,0,0,0.35);
+  font-size:       0.9rem;
+  animation:       inactivity-in 0.3s ease;
+}
+
+.inactivity-banner button {
+  background:    #fef3c7;
+  color:         #7c2d12;
+  border:        none;
+  border-radius: 6px;
+  padding:       6px 14px;
+  font-size:     0.85rem;
+  font-weight:   600;
+  cursor:        pointer;
+  white-space:   nowrap;
+}
+
+.inactivity-banner button:hover { background: #fff; }
+
+@keyframes inactivity-in {
+  from { opacity: 0; translate: -50% 12px; }
+  to   { opacity: 1; translate: -50% 0;    }
+}
+
 /* ─── Proyectos admin ────────────────────────────── */
 .link-editor { margin: 1rem 0; }
 
@@ -798,8 +843,9 @@ td code {
 .img-row--inactive { opacity: 0.55; }
 
 .img-thumb {
+  display: block;
   width: 72px;
-  height: 52px;
+  height: 52px !important;
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;

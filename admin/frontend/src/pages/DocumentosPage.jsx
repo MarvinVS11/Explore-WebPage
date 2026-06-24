@@ -3,6 +3,7 @@ import {
   getDocumentos, createDocumento, updateDocumento,
   deleteDocumento, uploadDocumento,
 } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY = { title: '', description: '', category: '', fileUrl: '', fileName: '', fileType: '', order: 0, isVisible: true };
 
@@ -17,13 +18,13 @@ function fileIcon(fileType) {
 }
 
 export default function DocumentosPage() {
+  const toast = useToast();
   const [items,     setItems]     = useState([]);
   const [editing,   setEditing]   = useState(null);
   const [adding,    setAdding]    = useState(false);
   const [form,      setForm]      = useState(EMPTY);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [msg,       setMsg]       = useState('');
   const [loading,   setLoading]   = useState(true);
   const [catFilter, setCatFilter] = useState('');
   const fileRef = useRef();
@@ -31,7 +32,7 @@ export default function DocumentosPage() {
   const load = (cat = catFilter) =>
     getDocumentos(cat)
       .then(setItems)
-      .catch(e => setMsg('❌ ' + e.message))
+      .catch(e => toast(e.message, 'error'))
       .finally(() => setLoading(false));
 
   useEffect(() => { load(); }, []);
@@ -39,7 +40,6 @@ export default function DocumentosPage() {
   const startAdd = () => {
     setAdding(true); setEditing(null);
     setForm({ ...EMPTY, order: items.length + 1 });
-    setMsg('');
   };
 
   const startEdit = (item) => {
@@ -49,10 +49,9 @@ export default function DocumentosPage() {
       fileUrl: item.fileUrl, fileName: item.fileName, fileType: item.fileType,
       order: item.order, isVisible: item.isVisible,
     });
-    setMsg('');
   };
 
-  const cancel = () => { setEditing(null); setAdding(false); setMsg(''); };
+  const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -61,14 +60,14 @@ export default function DocumentosPage() {
     try {
       const { url, fileName, fileType } = await uploadDocumento(file);
       setForm(f => ({ ...f, fileUrl: url, fileName: fileName || file.name, fileType: fileType || file.type }));
-    } catch (err) { setMsg('❌ ' + err.message); }
+    } catch (err) { toast(err.message, 'error'); }
     finally { setUploading(false); e.target.value = ''; }
   };
 
   const handleSave = async () => {
-    if (!form.title.trim()) { setMsg('❌ El título es obligatorio'); return; }
-    if (!form.fileUrl.trim()) { setMsg('❌ Debes subir un archivo o pegar una URL'); return; }
-    setSaving(true); setMsg('');
+    if (!form.title.trim()) { toast('El título es obligatorio', 'error'); return; }
+    if (!form.fileUrl.trim()) { toast('Debes subir un archivo o pegar una URL', 'error'); return; }
+    setSaving(true);
     try {
       if (adding) {
         const created = await createDocumento(form);
@@ -78,8 +77,8 @@ export default function DocumentosPage() {
         setItems(p => p.map(i => i._id === editing ? updated : i));
       }
       cancel();
-      setMsg('✅ Guardado correctamente');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      toast('Guardado correctamente', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     finally { setSaving(false); }
   };
 
@@ -88,8 +87,8 @@ export default function DocumentosPage() {
     try {
       await deleteDocumento(id);
       setItems(p => p.filter(i => i._id !== id));
-      setMsg('✅ Eliminado');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      toast('Eliminado', 'success');
+    } catch (err) { toast(err.message, 'error'); }
   };
 
   const f = (field) => ({
@@ -110,8 +109,6 @@ export default function DocumentosPage() {
           <button className="btn-add" onClick={startAdd}>+ Agregar documento</button>
         )}
       </div>
-
-      {msg && <p className="status-msg">{msg}</p>}
 
       {/* Filtro por categoría */}
       {categories.length > 0 && !adding && !editing && (

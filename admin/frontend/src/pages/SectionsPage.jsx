@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getSections, updateSection } from '../api';
 import { useSite } from '../context/SiteContext';
+import { useToast } from '../context/ToastContext.jsx';
 
 const ALL_SECTION_LABELS = {
   hero:        'Hero (inicio)',
@@ -142,12 +143,12 @@ function ExtraFields({ sectionKey, extra, onChange }) {
 
 export default function SectionsPage() {
   const { siteId } = useSite();
+  const toast = useToast();
   const [sections, setSections] = useState([]);
   const [editing,  setEditing]  = useState(null);
   const [form,     setForm]     = useState({});
   const [extra,    setExtra]    = useState({});
   const [saving,   setSaving]   = useState(false);
-  const [msg,      setMsg]      = useState('');
   const [loading,  setLoading]  = useState(true);
 
   const hidden = siteId === 'explore' ? EXPLORE_HIDDEN : FUBONO_HIDDEN;
@@ -166,7 +167,7 @@ export default function SectionsPage() {
         });
         setSections(merged);
       })
-      .catch(err => setMsg('❌ ' + err.message))
+      .catch(err => toast(err.message, 'error'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -181,19 +182,17 @@ export default function SectionsPage() {
       isVisible: section.isVisible ?? true,
     });
     setExtra(section.extraData || {});
-    setMsg('');
   };
 
   const handleSave = async () => {
     setSaving(true);
-    setMsg('');
     try {
       const updated = await updateSection(editing, { ...form, extraData: extra });
       setSections(prev => prev.map(s => s.key === editing ? updated : s));
       setEditing(null);
-      setMsg('✅ Sección guardada correctamente');
+      toast('Sección guardada correctamente', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -209,7 +208,6 @@ export default function SectionsPage() {
   return (
     <div className="page">
       <h2 className="page-title">Secciones del sitio</h2>
-      {msg && <p className="status-msg">{msg}</p>}
 
       <div className="cards">
         {sections.map(section => (

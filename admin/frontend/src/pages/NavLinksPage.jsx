@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
 import { getNavLinks, createNavLink, updateNavLink, deleteNavLink } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY = { label: '', href: '', order: 0, isActive: true };
 
 export default function NavLinksPage() {
+  const toast = useToast();
   const [links,   setLinks]   = useState([]);
   const [editing, setEditing] = useState(null);
   const [adding,  setAdding]  = useState(false);
   const [form,    setForm]    = useState(EMPTY);
   const [saving,  setSaving]  = useState(false);
-  const [msg,     setMsg]     = useState('');
   const [loading, setLoading] = useState(true);
 
   const load = () =>
     getNavLinks()
       .then(setLinks)
-      .catch(err => setMsg('❌ ' + err.message))
+      .catch(err => toast(err.message, 'error'))
       .finally(() => setLoading(false));
 
   useEffect(() => { load(); }, []);
@@ -24,19 +25,16 @@ export default function NavLinksPage() {
     setEditing(link._id);
     setAdding(false);
     setForm({ label: link.label, href: link.href, order: link.order, isActive: link.isActive });
-    setMsg('');
   };
 
   const startAdd = () => {
     setAdding(true);
     setEditing(null);
     setForm({ ...EMPTY, order: links.length + 1 });
-    setMsg('');
   };
 
   const handleSave = async () => {
     setSaving(true);
-    setMsg('');
     try {
       if (adding) {
         const created = await createNavLink(form);
@@ -47,9 +45,9 @@ export default function NavLinksPage() {
       }
       setEditing(null);
       setAdding(false);
-      setMsg('✅ Guardado correctamente');
+      toast('Guardado correctamente', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -60,9 +58,9 @@ export default function NavLinksPage() {
     try {
       await deleteNavLink(id);
       setLinks(prev => prev.filter(l => l._id !== id));
-      setMsg('✅ Link eliminado');
+      toast('Link eliminado', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -78,7 +76,6 @@ export default function NavLinksPage() {
           <button className="btn-add" onClick={startAdd}>+ Agregar link</button>
         )}
       </div>
-      {msg && <p className="status-msg">{msg}</p>}
 
       {isFormOpen && (
         <div className="card form-card">

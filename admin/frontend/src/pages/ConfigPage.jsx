@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getConfig, updateConfig, uploadFile } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 const TEXT_FIELDS = [
   { key: 'siteName',        label: 'Nombre del sitio' },
@@ -14,10 +15,10 @@ const SOCIAL_FIELDS = [
 ];
 
 export default function ConfigPage() {
+  const toast = useToast();
   const [form,         setForm]         = useState({});
   const [saving,       setSaving]       = useState(false);
   const [loading,      setLoading]      = useState(true);
-  const [msg,          setMsg]          = useState('');
   const [uploadingImg, setUploadingImg] = useState(false);
   const [uploadingVid, setUploadingVid] = useState(false);
   const [vidProgress,  setVidProgress]  = useState('');
@@ -30,18 +31,17 @@ export default function ConfigPage() {
   useEffect(() => {
     getConfig('main')
       .then(data => setForm(data))
-      .catch(err => setMsg('❌ ' + err.message))
+      .catch(err => toast(err.message, 'error'))
       .finally(() => setLoading(false));
   }, []);
 
   const handleSave = async () => {
     setSaving(true);
-    setMsg('');
     try {
       await updateConfig('main', form);
-      setMsg('✅ Configuración guardada correctamente');
+      toast('Configuración guardada correctamente', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -52,7 +52,6 @@ export default function ConfigPage() {
     if (!file) return;
     setUploadingVid(true);
     setVidProgress('0%');
-    setMsg('');
 
     const formData = new FormData();
     formData.append('file', file);
@@ -71,9 +70,9 @@ export default function ConfigPage() {
       if (xhr.status === 200) {
         const result = JSON.parse(xhr.responseText);
         setForm(prev => ({ ...prev, videoUrl: result.secure_url }));
-        setMsg('✅ Video subido. Guardá los cambios para aplicarlo.');
+        toast('Video subido. Guardá los cambios para aplicarlo.', 'success');
       } else {
-        setMsg('❌ Error al subir el video a Cloudinary');
+        toast('Error al subir el video a Cloudinary', 'error');
       }
       setVidProgress('');
       setUploadingVid(false);
@@ -81,7 +80,7 @@ export default function ConfigPage() {
     };
 
     xhr.onerror = () => {
-      setMsg('❌ Error de conexión al subir el video');
+      toast('Error de conexión al subir el video', 'error');
       setVidProgress('');
       setUploadingVid(false);
       e.target.value = '';
@@ -94,13 +93,12 @@ export default function ConfigPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingImg(true);
-    setMsg('');
     try {
       const { url } = await uploadFile(file, 'image');
       setForm(prev => ({ ...prev, logoUrl: url }));
-      setMsg('✅ Logo subido. Guardá los cambios para aplicarlo.');
+      toast('Logo subido. Guardá los cambios para aplicarlo.', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setUploadingImg(false);
       e.target.value = '';
@@ -111,13 +109,12 @@ export default function ConfigPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingSocial(prev => ({ ...prev, [imgKey]: true }));
-    setMsg('');
     try {
       const { url } = await uploadFile(file, 'image');
       setForm(prev => ({ ...prev, [imgKey]: url }));
-      setMsg(`✅ Imagen de ${label} subida. Guardá los cambios para aplicarla.`);
+      toast(`Imagen de ${label} subida. Guardá los cambios para aplicarla.`, 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setUploadingSocial(prev => ({ ...prev, [imgKey]: false }));
       e.target.value = '';
@@ -129,7 +126,6 @@ export default function ConfigPage() {
   return (
     <div className="page">
       <h2 className="page-title">Configuración del sitio</h2>
-      {msg && <p className="status-msg">{msg}</p>}
 
       {/* ── Video de fondo ──────────────────────────── */}
       <div className="card upload-card">

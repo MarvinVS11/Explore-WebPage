@@ -1,23 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
 import { getRedItems, createRedItem, updateRedItem, deleteRedItem, uploadDocumento } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY = { label: '', href: '', type: 'internal', iconUrl: '', documentUrl: '', order: 0, isActive: true };
 
 export default function RedItemsPage() {
+  const toast = useToast();
   const [items,     setItems]     = useState([]);
   const [editing,   setEditing]   = useState(null);
   const [adding,    setAdding]    = useState(false);
   const [form,      setForm]      = useState(EMPTY);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [msg,       setMsg]       = useState('');
   const [loading,   setLoading]   = useState(true);
   const docRef = useRef();
 
   useEffect(() => {
     getRedItems()
       .then(setItems)
-      .catch(err => setMsg('❌ ' + err.message))
+      .catch(err => toast(err.message, 'error'))
       .finally(() => setLoading(false));
   }, []);
 
@@ -29,17 +30,15 @@ export default function RedItemsPage() {
       iconUrl: item.iconUrl, documentUrl: item.documentUrl || '',
       order: item.order, isActive: item.isActive,
     });
-    setMsg('');
   };
 
   const startAdd = () => {
     setAdding(true);
     setEditing(null);
     setForm({ ...EMPTY, order: items.length + 1 });
-    setMsg('');
   };
 
-  const cancel = () => { setEditing(null); setAdding(false); setMsg(''); };
+  const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleDocUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -48,15 +47,14 @@ export default function RedItemsPage() {
     try {
       const { url } = await uploadDocumento(file);
       setForm(f => ({ ...f, documentUrl: url }));
-      setMsg('✅ Documento subido correctamente');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      toast('Documento subido correctamente', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     finally { setUploading(false); e.target.value = ''; }
   };
 
   const handleSave = async () => {
-    if (!form.label.trim()) { setMsg('❌ La etiqueta es obligatoria'); return; }
+    if (!form.label.trim()) { toast('La etiqueta es obligatoria', 'error'); return; }
     setSaving(true);
-    setMsg('');
     try {
       if (adding) {
         const created = await createRedItem(form);
@@ -66,9 +64,9 @@ export default function RedItemsPage() {
         setItems(prev => prev.map(i => i._id === editing ? updated : i));
       }
       cancel();
-      setMsg('✅ Guardado correctamente');
+      toast('Guardado correctamente', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -79,9 +77,9 @@ export default function RedItemsPage() {
     try {
       await deleteRedItem(id);
       setItems(prev => prev.filter(i => i._id !== id));
-      setMsg('✅ Ítem eliminado');
+      toast('Ítem eliminado', 'success');
     } catch (err) {
-      setMsg('❌ ' + err.message);
+      toast(err.message, 'error');
     }
   };
 
@@ -97,7 +95,6 @@ export default function RedItemsPage() {
           <button className="btn-add" onClick={startAdd}>+ Agregar ítem</button>
         )}
       </div>
-      {msg && <p className="status-msg">{msg}</p>}
 
       {isFormOpen && (
         <div className="card form-card" style={{ marginBottom: 24 }}>

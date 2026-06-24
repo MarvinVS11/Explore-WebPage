@@ -3,24 +3,25 @@ import {
   getSitiosRecreacion, createSitioRecreacion,
   updateSitioRecreacion, deleteSitioRecreacion, uploadFile,
 } from '../api';
+import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY = { title: '', description: '', imageUrl: '', mapsUrl: '', linkUrl: '', order: 0, isVisible: true };
 
 export default function SitiosRecreacionPage() {
+  const toast = useToast();
   const [items,     setItems]     = useState([]);
   const [editing,   setEditing]   = useState(null);
   const [adding,    setAdding]    = useState(false);
   const [form,      setForm]      = useState(EMPTY);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [msg,       setMsg]       = useState('');
   const [loading,   setLoading]   = useState(true);
   const fileRef = useRef();
 
   const load = () =>
     getSitiosRecreacion()
       .then(setItems)
-      .catch(e => setMsg('❌ ' + e.message))
+      .catch(e => toast(e.message, 'error'))
       .finally(() => setLoading(false));
 
   useEffect(() => { load(); }, []);
@@ -28,17 +29,15 @@ export default function SitiosRecreacionPage() {
   const startAdd = () => {
     setAdding(true); setEditing(null);
     setForm({ ...EMPTY, order: items.length + 1 });
-    setMsg('');
   };
 
   const startEdit = (item) => {
     setEditing(item._id); setAdding(false);
     setForm({ title: item.title, description: item.description, imageUrl: item.imageUrl,
               mapsUrl: item.mapsUrl, linkUrl: item.linkUrl, order: item.order, isVisible: item.isVisible });
-    setMsg('');
   };
 
-  const cancel = () => { setEditing(null); setAdding(false); setMsg(''); };
+  const cancel = () => { setEditing(null); setAdding(false); };
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -47,13 +46,13 @@ export default function SitiosRecreacionPage() {
     try {
       const { url } = await uploadFile(file, 'image');
       setForm(f => ({ ...f, imageUrl: url }));
-    } catch (err) { setMsg('❌ ' + err.message); }
+    } catch (err) { toast(err.message, 'error'); }
     finally { setUploading(false); e.target.value = ''; }
   };
 
   const handleSave = async () => {
-    if (!form.title.trim()) { setMsg('❌ El título es obligatorio'); return; }
-    setSaving(true); setMsg('');
+    if (!form.title.trim()) { toast('El título es obligatorio', 'error'); return; }
+    setSaving(true);
     try {
       if (adding) {
         const created = await createSitioRecreacion(form);
@@ -63,8 +62,8 @@ export default function SitiosRecreacionPage() {
         setItems(p => p.map(i => i._id === editing ? updated : i));
       }
       cancel();
-      setMsg('✅ Guardado correctamente');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      toast('Guardado correctamente', 'success');
+    } catch (err) { toast(err.message, 'error'); }
     finally { setSaving(false); }
   };
 
@@ -73,8 +72,8 @@ export default function SitiosRecreacionPage() {
     try {
       await deleteSitioRecreacion(id);
       setItems(p => p.filter(i => i._id !== id));
-      setMsg('✅ Eliminado');
-    } catch (err) { setMsg('❌ ' + err.message); }
+      toast('Eliminado', 'success');
+    } catch (err) { toast(err.message, 'error'); }
   };
 
   const f = (field) => ({
@@ -92,8 +91,6 @@ export default function SitiosRecreacionPage() {
           <button className="btn-add" onClick={startAdd}>+ Agregar sitio</button>
         )}
       </div>
-
-      {msg && <p className="status-msg">{msg}</p>}
 
       {/* Formulario */}
       {(adding || editing) && (
