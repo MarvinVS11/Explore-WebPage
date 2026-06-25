@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import useSection from '../hooks/useSection';
 import useSiteConfig from '../hooks/useSiteConfig';
-import { getImageUrl } from '../api';
+import { getImageUrl, sendContactMessage } from '../api';
 import Skeleton from './Skeleton';
 
 export default function Contacto() {
-  const { data, loading }     = useSection('contacto');
-  const { config }            = useSiteConfig();
-  const [form, setForm]       = useState({ nombre: '', email: '', mensaje: '' });
-  const [enviado, setEnviado] = useState(false);
+  const { data, loading }       = useSection('contacto');
+  const { config }              = useSiteConfig();
+  const [form, setForm]         = useState({ nombre: '', email: '', mensaje: '' });
+  const [status, setStatus]     = useState('idle'); // idle | sending | success | error
+  const [errorMsg, setErrorMsg] = useState('');
 
   const extra = data?.extraData || {};
 
@@ -16,14 +17,21 @@ export default function Contacto() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Por ahora abre WhatsApp con el mensaje
-    const mensaje = `Hola! Soy ${form.nombre} (${form.email}). ${form.mensaje}`;
-    const url = `https://wa.me/${extra.telefono?.replace(/\D/g,'')}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
-    setEnviado(true);
-    setTimeout(() => setEnviado(false), 4000);
+    if (!form.nombre.trim() || !form.email.trim() || !form.mensaje.trim()) return;
+    setStatus('sending');
+    setErrorMsg('');
+    try {
+      await sendContactMessage(form);
+      setStatus('success');
+      setForm({ nombre: '', email: '', mensaje: '' });
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (err) {
+      setStatus('error');
+      setErrorMsg(err.message);
+      setTimeout(() => setStatus('idle'), 6000);
+    }
   };
 
   if (loading) {
@@ -113,11 +121,22 @@ export default function Contacto() {
               rows={4}
             />
           </div>
+          {status === 'success' && (
+            <p className="contacto-feedback contacto-feedback--ok">
+              ✅ Mensaje enviado. Le responderemos pronto.
+            </p>
+          )}
+          {status === 'error' && (
+            <p className="contacto-feedback contacto-feedback--err">
+              ❌ {errorMsg || 'No se pudo enviar el mensaje. Intente de nuevo.'}
+            </p>
+          )}
           <button
             className="btn-primary btn-full"
             onClick={handleSubmit}
+            disabled={status === 'sending'}
           >
-            {enviado ? '✅ Mensaje enviado' : (data?.ctaText || 'Enviar mensaje')}
+            {status === 'sending' ? 'Enviando…' : (data?.ctaText || 'Enviar mensaje')}
           </button>
         </div>
 

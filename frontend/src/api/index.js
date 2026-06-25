@@ -79,6 +79,18 @@ export const getAreasProtegidas = async () => {
   return res.json();
 };
 
+// ─── Contacto ────────────────────────────────────────────────────────────────
+export const sendContactMessage = async (data) => {
+  const res = await fetch(`${BASE}/api/contact`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', 'x-site-id': 'explore' },
+    body:    JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || 'Error al enviar el mensaje');
+  return json;
+};
+
 // ─── Helper URL de imágenes ──────────────────────────────────────────────────
 export const getImageUrl = (url) => {
   if (!url) return '/images/placeholder.webp';

@@ -152,6 +152,20 @@ p {
   justify-content: center;
 }
 
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor:  not-allowed;
+}
+
+.contacto-feedback {
+  padding:       10px 14px;
+  border-radius: 6px;
+  font-size:     14px;
+  margin-bottom: 10px;
+}
+.contacto-feedback--ok  { background: #d1fae5; color: #065f46; }
+.contacto-feedback--err { background: #fee2e2; color: #991b1b; }
+
 .btn-secondary {
   display:       inline-flex;
   align-items:   center;
