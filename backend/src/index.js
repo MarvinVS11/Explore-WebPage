@@ -31,15 +31,24 @@ function ensureDB() {
 // ─── Middlewares ──────────────────────────────────────────────────────────────
 app.use(cors({
   origin: (origin, callback) => {
+    // Soporta múltiples dominios separados por coma en cada variable de entorno
+    const envDomains = [
+      process.env.FRONTEND_URL,
+      process.env.FUBONO_URL,
+      process.env.EXPLORE_DOMAIN,
+      process.env.FUBONO_DOMAIN,
+    ]
+      .filter(Boolean)
+      .flatMap(d => d.split(',').map(s => s.trim()));
+
     const allowed = [
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:5175',
       'http://localhost:3000',
-      process.env.FRONTEND_URL,
-      process.env.FUBONO_URL,
-    ].filter(Boolean);
-    // Permitir todas las URLs de Vercel (previews de release, staging, etc.)
+      ...envDomains,
+    ];
+
     if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
