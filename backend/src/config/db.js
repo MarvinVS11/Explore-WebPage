@@ -38,6 +38,10 @@ const connectDB = async () => {
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS:          30000,
     connectTimeoutMS:         8000,
+    // En serverless cada instancia solo necesita 1 conexión del pool
+    maxPoolSize:              1,
+    minPoolSize:              0,
+    maxIdleTimeMS:            10000,
   };
 
   try {
