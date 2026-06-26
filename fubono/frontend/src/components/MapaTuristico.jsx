@@ -16,6 +16,8 @@ export default function MapaTuristico() {
     );
   }
 
+  if (data?.isVisible === false) return null;
+
   const mapUrl = data?.extraData?.mapEmbedUrl;
 
   return (

@@ -25,6 +25,8 @@ export default function Nosotros() {
     );
   }
 
+  if (data?.isVisible === false) return null;
+
   return (
     <section id="nosotros" className="nosotros section-reveal">
       <div className="nosotros-inner">

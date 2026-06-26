@@ -34,6 +34,8 @@ export default function Contacto() {
     );
   }
 
+  if (data?.isVisible === false) return null;
+
   return (
     <section id="contacto" className="contacto section-reveal">
       <div className="contacto-inner">
