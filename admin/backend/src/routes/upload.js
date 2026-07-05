@@ -13,14 +13,11 @@ function sanitizeName(str) {
     .replace(/^_|_$/g, '');                            // quitar _ al inicio/fin
 }
 
-function buildPublicId(originalName, mimetype) {
-  const ext         = originalName.split('.').pop().toLowerCase();
-  const nameNoExt   = originalName.replace(/\.[^/.]+$/, '');
-  const cleanName   = sanitizeName(nameNoExt);
-  const isImageOrVideo = mimetype.startsWith('image/') || mimetype.startsWith('video/');
-  // Imágenes/video: Cloudinary añade la extensión automáticamente → no la incluimos
-  // Raw (PDF, etc.): la URL es exactamente el public_id → necesitamos incluir la extensión
-  return isImageOrVideo ? cleanName : `${cleanName}.${ext}`;
+function buildPublicId(originalName) {
+  // Cloudinary con resource_type:auto agrega la extensión correcta al URL solo
+  // → siempre quitamos la extensión del public_id para evitar duplicados (.pdf.pdf)
+  const nameNoExt = originalName.replace(/\.[^/.]+$/, '');
+  return sanitizeName(nameNoExt);
 }
 
 function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}) {
@@ -32,7 +29,7 @@ function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}
     };
 
     if (originalName) {
-      uploadOptions.public_id       = buildPublicId(originalName, mimetype);
+      uploadOptions.public_id       = buildPublicId(originalName);
       uploadOptions.unique_filename = false;
     }
 
