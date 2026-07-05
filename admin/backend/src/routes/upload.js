@@ -5,20 +5,35 @@ const cloudinary = require('../config/cloudinary');
 
 router.use(auth);
 
+function sanitizePublicId(filename) {
+  // Quitar extensión, reemplazar caracteres no permitidos por guión bajo
+  return filename
+    .replace(/\.[^/.]+$/, '')                 // quitar extensión
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // quitar tildes
+    .replace(/[^a-zA-Z0-9._-]/g, '_')        // sólo alfanumérico + ._-
+    .replace(/_+/g, '_')                      // colapsar múltiples _
+    .replace(/^_|_$/g, '');                   // quitar _ al inicio/fin
+}
+
 function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}) {
   return new Promise((resolve, reject) => {
     let resourceType = 'image';
     if (mimetype.startsWith('video/')) resourceType = 'video';
     else if (!mimetype.startsWith('image/')) resourceType = 'raw';
+
+    const uploadOptions = {
+      folder:        `explore-occidente/${folder}`,
+      resource_type: resourceType,
+      ...options,
+    };
+
+    if (originalName) {
+      uploadOptions.public_id      = sanitizePublicId(originalName);
+      uploadOptions.unique_filename = false;
+    }
+
     const stream = cloudinary.uploader.upload_stream(
-      {
-        folder:           `explore-occidente/${folder}`,
-        resource_type:    resourceType,
-        use_filename:     true,
-        unique_filename:  false,
-        public_id:        originalName ? originalName.replace(/\.[^/.]+$/, '') : undefined,
-        ...options,
-      },
+      uploadOptions,
       (error, result) => (error ? reject(error) : resolve(result))
     );
     stream.end(buffer);
@@ -29,9 +44,15 @@ function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}
 router.post('/image', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
   try {
-    const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, 'images', req.file.originalname);
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      req.file.mimetype,
+      'images',
+      req.file.originalname
+    );
     res.json({ url: result.secure_url, publicId: result.public_id });
   } catch (err) {
+    console.error('[upload/image]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -40,9 +61,15 @@ router.post('/image', upload.single('file'), async (req, res) => {
 router.post('/video', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
   try {
-    const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype, 'video', req.file.originalname);
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      req.file.mimetype,
+      'video',
+      req.file.originalname
+    );
     res.json({ url: result.secure_url, publicId: result.public_id });
   } catch (err) {
+    console.error('[upload/video]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -75,6 +102,7 @@ router.post('/documento', upload.single('file'), async (req, res) => {
       fileType: req.file.mimetype,
     });
   } catch (err) {
+    console.error('[upload/documento]', err.message);
     res.status(500).json({ error: err.message });
   }
 });
