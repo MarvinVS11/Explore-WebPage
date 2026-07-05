@@ -17,13 +17,9 @@ function sanitizePublicId(filename) {
 
 function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}) {
   return new Promise((resolve, reject) => {
-    let resourceType = 'image';
-    if (mimetype.startsWith('video/')) resourceType = 'video';
-    else if (!mimetype.startsWith('image/')) resourceType = 'raw';
-
     const uploadOptions = {
       folder:        `explore-occidente/${folder}`,
-      resource_type: resourceType,
+      resource_type: 'auto',
       ...options,
     };
 
