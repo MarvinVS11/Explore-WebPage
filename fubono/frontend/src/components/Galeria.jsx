@@ -38,9 +38,7 @@ export default function Galeria() {
     );
   }
 
-  if (!data?.isVisible || images.length === 0) {
-    return <section id="galeria" aria-hidden="true" style={{ padding: 0, margin: 0 }} />;
-  }
+  if (!data?.isVisible || images.length === 0) return null;
 
   return (
     <section id="galeria" className="galeria section-reveal">

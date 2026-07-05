@@ -4,12 +4,13 @@ import { useSite } from '../context/SiteContext';
 import { useToast } from '../context/ToastContext.jsx';
 
 const ALL_SECTIONS = [
-  { key: 'hero',         label: 'Banner / Hero',                    roles: ['banner'],  sites: ['explore', 'fubono'] },
-  { key: 'nosotros',     label: 'Nosotros',                         roles: ['portada'], sites: ['explore', 'fubono'] },
-  { key: 'hospedajes',   label: 'Hospedajes (banner)',               roles: ['banner'],  sites: ['explore'] },
-  { key: 'recreacion',   label: 'Sitios de Recreación (banner)',     roles: ['banner'],  sites: ['explore'] },
-  { key: 'restaurantes', label: 'Restaurantes y Miradores (banner)', roles: ['banner'],  sites: ['explore'] },
-  { key: 'galeria',      label: 'Galería de fotos',                  roles: ['galeria'], sites: ['explore', 'fubono'] },
+  { key: 'hero',               label: 'Banner / Hero',                    roles: ['banner'],  sites: ['explore', 'fubono'] },
+  { key: 'nosotros',           label: 'Nosotros',                         roles: ['portada'], sites: ['explore', 'fubono'] },
+  { key: 'hospedajes',         label: 'Hospedajes (banner)',               roles: ['banner'],  sites: ['explore'] },
+  { key: 'recreacion',         label: 'Sitios de Recreación (banner)',     roles: ['banner'],  sites: ['explore'] },
+  { key: 'restaurantes',       label: 'Restaurantes y Miradores (banner)', roles: ['banner'],  sites: ['explore'] },
+  { key: 'galeria',            label: 'Galería de fotos',                  roles: ['galeria'], sites: ['explore', 'fubono'] },
+  { key: 'explore-occidente',  label: 'Explore Occidente',                 roles: ['portada'], sites: ['fubono'] },
 ];
 
 const ROLE_LABELS = {

@@ -4,15 +4,21 @@ import { useToast } from '../context/ToastContext.jsx';
 
 const EMPTY = { title: '', description: '', imageUrl: '', mapsUrl: '', linkUrl: '', order: 0, isVisible: true };
 
+function isPdf(url) {
+  return url && url.toLowerCase().includes('.pdf');
+}
+
 export default function HospedajesPage() {
   const toast = useToast();
-  const [items,     setItems]     = useState([]);
-  const [editing,   setEditing]   = useState(null);
-  const [adding,    setAdding]    = useState(false);
-  const [form,      setForm]      = useState(EMPTY);
-  const [saving,    setSaving]    = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [loading,   setLoading]   = useState(true);
+  const [items,        setItems]        = useState([]);
+  const [editing,      setEditing]      = useState(null);
+  const [adding,       setAdding]       = useState(false);
+  const [form,         setForm]         = useState(EMPTY);
+  const [saving,       setSaving]       = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadingFile,setUploadingFile]= useState(false);
+  const [loading,      setLoading]      = useState(true);
+  const imgRef  = useRef();
   const fileRef = useRef();
 
   const load = () =>
@@ -36,15 +42,27 @@ export default function HospedajesPage() {
 
   const cancel = () => { setEditing(null); setAdding(false); };
 
-  const handleUpload = async (e) => {
+  const handleUploadImg = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(true);
+    setUploadingImg(true);
     try {
       const { url } = await uploadFile(file, 'image');
       setForm(f => ({ ...f, imageUrl: url }));
     } catch (err) { toast(err.message, 'error'); }
-    finally { setUploading(false); e.target.value = ''; }
+    finally { setUploadingImg(false); e.target.value = ''; }
+  };
+
+  const handleUploadFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingFile(true);
+    try {
+      const { url } = await uploadFile(file, 'image');
+      setForm(f => ({ ...f, linkUrl: url }));
+      toast('Archivo subido correctamente', 'success');
+    } catch (err) { toast(err.message, 'error'); }
+    finally { setUploadingFile(false); e.target.value = ''; }
   };
 
   const handleSave = async () => {
@@ -89,47 +107,77 @@ export default function HospedajesPage() {
         )}
       </div>
 
-      {/* Formulario */}
       {(adding || editing) && (
         <div className="card" style={{ marginBottom: 24 }}>
           <h3 className="upload-card-title">{adding ? '➕ Nuevo hospedaje' : '✏️ Editar hospedaje'}</h3>
           <div className="edit-form">
+
             <div className="field">
               <label>Título</label>
               <input {...f('title')} placeholder="Nombre del hospedaje" />
             </div>
+
             <div className="field">
               <label>Descripción</label>
               <textarea rows={4} {...f('description')} placeholder="Descripción del hospedaje..." />
             </div>
-            <div className="field-row">
-              <div className="field">
-                <label>Enlace del sitio (Ver más)</label>
-                <input {...f('linkUrl')} placeholder="https://..." />
-              </div>
-              <div className="field">
-                <label>Enlace de Google Maps</label>
-                <input {...f('mapsUrl')} placeholder="https://maps.google.com/..." />
-              </div>
+
+            <div className="field">
+              <label>Enlace de Google Maps</label>
+              <input {...f('mapsUrl')} placeholder="https://maps.google.com/..." />
             </div>
 
-            {/* Imagen */}
+            {/* Imagen miniatura */}
             <div className="field">
-              <label>Imagen del hospedaje</label>
+              <label>Imagen del hospedaje <span className="field-hint">(miniatura en la lista)</span></label>
               <div className="upload-row" style={{ marginBottom: 8 }}>
-                <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUpload} />
-                <button type="button" className="btn-upload" onClick={() => fileRef.current.click()} disabled={uploading}>
-                  {uploading ? '⏳ Subiendo...' : '📤 Subir desde PC'}
+                <input ref={imgRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUploadImg} />
+                <button type="button" className="btn-upload" onClick={() => imgRef.current.click()} disabled={uploadingImg}>
+                  {uploadingImg ? '⏳ Subiendo...' : '🖼️ Subir imagen'}
                 </button>
-                <span className="upload-hint">JPG, PNG, WebP · máx 10 MB</span>
+                <span className="upload-hint">JPG, PNG, WebP</span>
               </div>
-              {form.imageUrl && (
+              {form.imageUrl && !isPdf(form.imageUrl) && (
                 <img src={form.imageUrl} alt="preview"
-                  style={{ maxHeight: 140, maxWidth: '100%', borderRadius: 8, objectFit: 'cover', marginTop: 6 }}
+                  style={{ maxHeight: 120, maxWidth: '100%', borderRadius: 8, objectFit: 'cover', marginBottom: 6 }}
                   onError={e => { e.target.onerror = null; e.target.src = '/images/placeholder.webp'; }}
                 />
               )}
-              <input {...f('imageUrl')} placeholder="O pega una URL directamente" style={{ marginTop: 8 }} />
+              <input {...f('imageUrl')} placeholder="O pega una URL de imagen" style={{ marginTop: 4 }} />
+            </div>
+
+            {/* Archivo a mostrar (imagen o PDF) */}
+            <div className="field">
+              <label>Archivo a mostrar <span className="field-hint">(imagen o PDF — se abre en nueva pestaña al hacer clic)</span></label>
+              <div className="upload-row" style={{ marginBottom: 8 }}>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  style={{ display: 'none' }}
+                  onChange={handleUploadFile}
+                />
+                <button type="button" className="btn-upload" onClick={() => fileRef.current.click()} disabled={uploadingFile}>
+                  {uploadingFile ? '⏳ Subiendo...' : '📎 Subir imagen o PDF'}
+                </button>
+                <span className="upload-hint">JPG, PNG, WebP, PDF · máx 150 MB</span>
+              </div>
+
+              {form.linkUrl && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, padding: '0.5rem 0.75rem', background: 'var(--bg-alt)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  {isPdf(form.linkUrl)
+                    ? <span style={{ fontSize: 24 }}>📄</span>
+                    : <img src={form.linkUrl} alt="preview" style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: 4 }} onError={e => { e.target.style.display = 'none'; }} />
+                  }
+                  <a href={form.linkUrl} target="_blank" rel="noreferrer"
+                    style={{ fontSize: 12, color: 'var(--primary)', wordBreak: 'break-all', flex: 1 }}>
+                    {isPdf(form.linkUrl) ? 'PDF cargado — clic para ver' : 'Imagen cargada — clic para ver'}
+                  </a>
+                  <button type="button" className="btn-delete-sm" onClick={() => setForm(p => ({ ...p, linkUrl: '' }))}>✕</button>
+                </div>
+              )}
+
+              <input {...f('linkUrl')} placeholder="O pega una URL directamente (imagen o PDF)" style={{ marginTop: 4 }} />
             </div>
 
             <div className="field-row">
@@ -189,8 +237,15 @@ export default function HospedajesPage() {
             </div>
             <div className="card-preview">
               {item.description && <p className="preview-body">{item.description.slice(0, 120)}{item.description.length > 120 ? '…' : ''}</p>}
-              {item.linkUrl && <p style={{ fontSize: 12, color: 'var(--muted)' }}>🔗 {item.linkUrl}</p>}
-              {item.mapsUrl && <p style={{ fontSize: 12, color: 'var(--muted)' }}>📍 {item.mapsUrl}</p>}
+              {item.linkUrl && (
+                <p style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {isPdf(item.linkUrl) ? '📄' : '🖼️'}
+                  <a href={item.linkUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>
+                    {isPdf(item.linkUrl) ? 'Ver PDF' : 'Ver archivo'}
+                  </a>
+                </p>
+              )}
+              {item.mapsUrl && <p style={{ fontSize: 12, color: 'var(--muted)' }}>📍 Google Maps</p>}
             </div>
           </div>
         ))}

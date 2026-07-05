@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import useSection from '../hooks/useSection';
 import Skeleton from './Skeleton';
+import Modal from './Modal';
 
 const ICON = {
   viewBox: '0 0 64 64',
@@ -82,6 +84,7 @@ const CARD_DEFS = [
 
 export default function Servicios() {
   const { data, loading } = useSection('servicios');
+  const [activePopup, setActivePopup] = useState(null);
 
   if (loading) {
     return (
@@ -98,34 +101,83 @@ export default function Servicios() {
 
   const extra = data?.extraData || {};
 
+  const getPopup = (id) => {
+    if (id === 'marketing') {
+      const title = extra['marketing_popup_title'];
+      const body  = extra['marketing_popup_body'];
+      if (!title && !body) return null;
+      return {
+        type:              'marketing',
+        title,
+        body,
+        beneficiosTitle:   extra['marketing_popup_beneficios_title'] || 'Beneficios de afiliarse',
+        beneficiosBody:    extra['marketing_popup_beneficios_body'],
+        categoriasTitle:   extra['marketing_popup_categorias_title'] || 'Categorías de membresías',
+        categorias:        extra['marketing_popup_categorias'] || [],
+        tablaTitle:        extra['marketing_popup_tabla_title'] || '¿Qué incluye cada categoría de membresía?',
+        tabla:             extra['marketing_popup_tabla'] || [],
+      };
+    }
+    const title    = extra[`${id}_popup_title`];
+    const body     = extra[`${id}_popup_body`];
+    const subtitle = extra[`${id}_popup_subtitle`];
+    const items    = extra[`${id}_popup_items`] || [];
+    if (!title && !body && items.length === 0) return null;
+    return { title, body, subtitle, items };
+  };
+
   return (
-    <section id="servicios" className="servicios section-reveal">
-      <div className="servicios-inner">
-        <div className="section-header">
-          <h2>{data?.title || 'Nuestros Servicios'}</h2>
-          {(data?.subtitle || data?.body) && (
-            <p>{data.subtitle || data.body}</p>
-          )}
+    <>
+      <section id="servicios" className="servicios section-reveal">
+        <div className="servicios-inner">
+          <div className="section-header">
+            <h2>{data?.title || 'Nuestros Servicios'}</h2>
+            {(data?.subtitle || data?.body) && (
+              <p>{data.subtitle || data.body}</p>
+            )}
+          </div>
+          <div className="servicios-grid">
+            {CARD_DEFS.map(({ id, Icon, defaultLabel, gradient }) => {
+              const label  = extra[`${id}_label`] || defaultLabel;
+              const href   = extra[`${id}_href`]  || '#contacto';
+              const popup  = getPopup(id);
+
+              if (popup) {
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    className="servicio-card"
+                    style={{ background: gradient }}
+                    aria-label={label}
+                    onClick={() => setActivePopup(popup)}
+                  >
+                    <div className="servicio-icon"><Icon /></div>
+                    <span className="servicio-label">{label}</span>
+                  </button>
+                );
+              }
+
+              return (
+                <a
+                  key={id}
+                  href={href}
+                  className="servicio-card"
+                  style={{ background: gradient }}
+                  aria-label={label}
+                >
+                  <div className="servicio-icon"><Icon /></div>
+                  <span className="servicio-label">{label}</span>
+                </a>
+              );
+            })}
+          </div>
         </div>
-        <div className="servicios-grid">
-          {CARD_DEFS.map(({ id, Icon, defaultLabel, gradient }) => {
-            const label = extra[`${id}_label`] || defaultLabel;
-            const href  = extra[`${id}_href`]  || '#contacto';
-            return (
-              <a
-                key={id}
-                href={href}
-                className="servicio-card"
-                style={{ background: gradient }}
-                aria-label={label}
-              >
-                <div className="servicio-icon"><Icon /></div>
-                <span className="servicio-label">{label}</span>
-              </a>
-            );
-          })}
-        </div>
-      </div>
-    </section>
+      </section>
+
+      {activePopup && (
+        <Modal data={activePopup} onClose={() => setActivePopup(null)} />
+      )}
+    </>
   );
 }
