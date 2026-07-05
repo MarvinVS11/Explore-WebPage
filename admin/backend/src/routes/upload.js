@@ -5,14 +5,22 @@ const cloudinary = require('../config/cloudinary');
 
 router.use(auth);
 
-function sanitizePublicId(filename) {
-  // Quitar extensión, reemplazar caracteres no permitidos por guión bajo
-  return filename
-    .replace(/\.[^/.]+$/, '')                 // quitar extensión
+function sanitizeName(str) {
+  return str
     .normalize('NFD').replace(/[̀-ͯ]/g, '') // quitar tildes
-    .replace(/[^a-zA-Z0-9._-]/g, '_')        // sólo alfanumérico + ._-
-    .replace(/_+/g, '_')                      // colapsar múltiples _
-    .replace(/^_|_$/g, '');                   // quitar _ al inicio/fin
+    .replace(/[^a-zA-Z0-9._-]/g, '_')                 // sólo alfanumérico + ._-
+    .replace(/_+/g, '_')                               // colapsar múltiples _
+    .replace(/^_|_$/g, '');                            // quitar _ al inicio/fin
+}
+
+function buildPublicId(originalName, mimetype) {
+  const ext         = originalName.split('.').pop().toLowerCase();
+  const nameNoExt   = originalName.replace(/\.[^/.]+$/, '');
+  const cleanName   = sanitizeName(nameNoExt);
+  const isImageOrVideo = mimetype.startsWith('image/') || mimetype.startsWith('video/');
+  // Imágenes/video: Cloudinary añade la extensión automáticamente → no la incluimos
+  // Raw (PDF, etc.): la URL es exactamente el public_id → necesitamos incluir la extensión
+  return isImageOrVideo ? cleanName : `${cleanName}.${ext}`;
 }
 
 function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}) {
@@ -24,7 +32,7 @@ function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}
     };
 
     if (originalName) {
-      uploadOptions.public_id      = sanitizePublicId(originalName);
+      uploadOptions.public_id       = buildPublicId(originalName, mimetype);
       uploadOptions.unique_filename = false;
     }
 
