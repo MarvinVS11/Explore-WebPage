@@ -13,23 +13,30 @@ function sanitizeName(str) {
     .replace(/^_|_$/g, '');                            // quitar _ al inicio/fin
 }
 
-function buildPublicId(originalName) {
-  // Cloudinary con resource_type:auto agrega la extensión correcta al URL solo
-  // → siempre quitamos la extensión del public_id para evitar duplicados (.pdf.pdf)
+function buildPublicId(originalName, mimetype) {
+  const ext       = originalName.split('.').pop().toLowerCase();
   const nameNoExt = originalName.replace(/\.[^/.]+$/, '');
-  return sanitizeName(nameNoExt);
+  const cleanName = sanitizeName(nameNoExt);
+  const isImageOrVideo = mimetype.startsWith('image/') || mimetype.startsWith('video/');
+  // Imágenes/video: Cloudinary agrega la extensión solo → no la incluimos
+  // Raw (PDF, docs): la URL es exactamente el public_id → incluimos la extensión
+  return isImageOrVideo ? cleanName : `${cleanName}.${ext}`;
 }
 
 function uploadToCloudinary(buffer, mimetype, folder, originalName, options = {}) {
   return new Promise((resolve, reject) => {
+    const isImage = mimetype.startsWith('image/');
+    const isVideo = mimetype.startsWith('video/');
+    const resourceType = isImage ? 'image' : isVideo ? 'video' : 'raw';
+
     const uploadOptions = {
       folder:        `explore-occidente/${folder}`,
-      resource_type: 'auto',
+      resource_type: resourceType,
       ...options,
     };
 
     if (originalName) {
-      uploadOptions.public_id       = buildPublicId(originalName);
+      uploadOptions.public_id       = buildPublicId(originalName, mimetype);
       uploadOptions.unique_filename = false;
     }
 
