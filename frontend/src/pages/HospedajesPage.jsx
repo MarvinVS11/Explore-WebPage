@@ -96,7 +96,14 @@ export default function HospedajesPage() {
                   </a>
                 )}
                 {h.linkUrl && (
-                  <a href={h.linkUrl} target="_blank" rel="noreferrer" className="hospedaje-link-btn">
+                  <a
+                    href={h.linkUrl.toLowerCase().endsWith('.pdf')
+                      ? `https://docs.google.com/viewer?url=${encodeURIComponent(h.linkUrl)}`
+                      : h.linkUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hospedaje-link-btn"
+                  >
                     <LinkIcon />
                     Ver más...
                   </a>
