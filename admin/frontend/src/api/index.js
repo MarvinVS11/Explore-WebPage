@@ -45,20 +45,59 @@ export const deleteNavLink  = (id)      =>
   request(`/api/navlinks/${id}`, { method: 'DELETE' });
 
 // ─── Upload ───────────────────────────────────────────────────────
-export const uploadFile = async (file, type = 'image') => {
-  const formData = new FormData();
-  formData.append('file', file);
-  const res = await fetch(`${BASE}/upload/${type}`, {
-    method:  'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('admin_token') || ''}`,
-      'X-Site-Id':   localStorage.getItem('admin_site') || 'explore',
-    },
-    body: formData,
+function sanitizeName(str) {
+  return str
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+}
+
+function buildPublicId(file) {
+  const mimetype  = file.type;
+  const ext       = file.name.split('.').pop().toLowerCase();
+  const nameNoExt = file.name.replace(/\.[^/.]+$/, '');
+  const clean     = sanitizeName(nameNoExt);
+  const isImageOrVideo = mimetype.startsWith('image/') || mimetype.startsWith('video/');
+  return isImageOrVideo ? clean : `${clean}.${ext}`;
+}
+
+function getResourceType(mimetype) {
+  if (mimetype.startsWith('image/')) return 'image';
+  if (mimetype.startsWith('video/')) return 'video';
+  return 'raw';
+}
+
+// Subida directa a Cloudinary (evita el límite de 4.5 MB de Vercel)
+export const uploadFile = async (file, folder = 'images') => {
+  const resourceType = getResourceType(file.type);
+  const publicId     = buildPublicId(file);
+  const cloudFolder  = `explore-occidente/${folder}`;
+
+  // 1. Pedir firma al backend
+  const sign = await request('/upload/sign', {
+    method: 'POST',
+    body:   JSON.stringify({ folder: cloudFolder, public_id: publicId, resource_type: resourceType }),
   });
+
+  // 2. Subir directamente a Cloudinary
+  const formData = new FormData();
+  formData.append('file',            file);
+  formData.append('api_key',         sign.api_key);
+  formData.append('timestamp',       sign.timestamp);
+  formData.append('signature',       sign.signature);
+  formData.append('folder',          cloudFolder);
+  formData.append('public_id',       publicId);
+  formData.append('resource_type',   resourceType);
+  formData.append('unique_filename', 'false');
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${sign.cloud_name}/${resourceType}/upload`,
+    { method: 'POST', body: formData }
+  );
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || `Error al subir ${type}`);
-  return data;
+  if (!res.ok) throw new Error(data.error?.message || 'Error al subir archivo');
+  return { url: data.secure_url, publicId: data.public_id };
 };
 
 // ─── Images ───────────────────────────────────────────────────────
