@@ -115,6 +115,26 @@ router.post('/documento', upload.single('file'), async (req, res) => {
   }
 });
 
+// POST /upload/sign — genera firma para subida directa desde el browser
+router.post('/sign', async (req, res) => {
+  try {
+    const { folder, public_id, resource_type = 'auto' } = req.body;
+    const timestamp = Math.round(Date.now() / 1000);
+    const params    = { timestamp, folder, resource_type, unique_filename: false };
+    if (public_id) params.public_id = public_id;
+
+    const signature = cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET);
+    res.json({
+      signature,
+      timestamp,
+      api_key:    process.env.CLOUDINARY_API_KEY,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // DELETE /upload/:publicId(*) — elimina de Cloudinary
 router.delete('/:publicId(*)', async (req, res) => {
   const publicId = req.params.publicId;
