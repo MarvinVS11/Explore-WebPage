@@ -1,8 +1,17 @@
-const router = require('express').Router();
-const https  = require('https');
-const http   = require('http');
+const router     = require('express').Router();
+const https      = require('https');
+const cloudinary = require('../config/cloudinary');
 
 const ALLOWED_HOST = 'res.cloudinary.com';
+
+// Parse a Cloudinary delivery URL into { resourceType, publicId }
+function parseCloudinaryUrl(url) {
+  const match = url.match(
+    /res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
+  );
+  if (!match) return null;
+  return { resourceType: match[1], publicId: match[2] };
+}
 
 router.get('/', (req, res) => {
   const { url } = req.query;
@@ -19,9 +28,20 @@ router.get('/', (req, res) => {
     return res.status(403).json({ error: 'Dominio no permitido' });
   }
 
-  const client = parsed.protocol === 'https:' ? https : http;
+  const parts = parseCloudinaryUrl(url);
+  if (!parts) return res.status(400).json({ error: 'URL de Cloudinary no reconocida' });
 
-  client.get(url, (upstream) => {
+  const { resourceType, publicId } = parts;
+
+  // Generate a signed delivery URL so Cloudinary accepts the request
+  const signedUrl = cloudinary.url(publicId, {
+    resource_type: resourceType,
+    type:          'upload',
+    sign_url:      true,
+    secure:        true,
+  });
+
+  https.get(signedUrl, (upstream) => {
     const status = upstream.statusCode;
     if (status !== 200) {
       res.status(status || 502).json({ error: `Error al obtener el archivo: ${status}` });
