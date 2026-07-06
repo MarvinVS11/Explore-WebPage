@@ -118,9 +118,10 @@ router.post('/documento', upload.single('file'), async (req, res) => {
 // POST /upload/sign — genera firma para subida directa desde el browser
 router.post('/sign', async (req, res) => {
   try {
-    const { folder, public_id, resource_type = 'auto' } = req.body;
+    const { folder, public_id } = req.body;
     const timestamp = Math.round(Date.now() / 1000);
-    const params    = { timestamp, folder, resource_type, unique_filename: false };
+    // resource_type se excluye del cálculo de firma según la API de Cloudinary
+    const params = { timestamp, folder, unique_filename: false };
     if (public_id) params.public_id = public_id;
 
     const signature = cloudinary.utils.api_sign_request(params, process.env.CLOUDINARY_API_SECRET);
