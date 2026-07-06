@@ -2,6 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getHospedajes, getSection, getImages, getImageUrl } from '../api';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+function pdfProxyUrl(url) {
+  return `${API_BASE}/api/pdf?url=${encodeURIComponent(url)}`;
+}
+
 function PinIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className="hospedaje-pin-icon">
@@ -98,7 +104,7 @@ export default function HospedajesPage() {
                 {h.linkUrl && (
                   <a
                     href={h.linkUrl.toLowerCase().endsWith('.pdf')
-                      ? `https://docs.google.com/viewer?url=${encodeURIComponent(h.linkUrl)}`
+                      ? pdfProxyUrl(h.linkUrl)
                       : h.linkUrl}
                     target="_blank"
                     rel="noreferrer"

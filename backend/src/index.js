@@ -80,8 +80,9 @@ if (!process.env.VERCEL) {
   app.use('/video',   express.static(path.join(uploadsDir, 'video')));
 }
 
-// ─── Ruta de contacto (no requiere DB) ───────────────────────────────────────
+// ─── Rutas que no requieren DB ───────────────────────────────────────────────
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/pdf',     require('./routes/pdf'));
 
 // ─── Middleware: espera conexión a DB antes de cada request ──────────────────
 app.use(async (req, res, next) => {
