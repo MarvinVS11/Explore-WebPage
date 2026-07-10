@@ -48,9 +48,9 @@ export const deleteNavLink  = (id)      =>
 function sanitizeName(str) {
   return str
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-zA-Z0-9._-]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
+    .replace(/[^\w\s.\-]/g, '_')   // solo word chars, espacios, punto, guión
+    .replace(/\s+/g, ' ')           // colapsar múltiples espacios
+    .trim();
 }
 
 function buildPublicId(file) {
