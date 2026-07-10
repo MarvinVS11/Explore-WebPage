@@ -8,9 +8,9 @@ router.use(auth);
 function sanitizeName(str) {
   return str
     .normalize('NFD').replace(/[̀-ͯ]/g, '') // quitar tildes
-    .replace(/[^a-zA-Z0-9._-]/g, '_')                 // sólo alfanumérico + ._-
-    .replace(/_+/g, '_')                               // colapsar múltiples _
-    .replace(/^_|_$/g, '');                            // quitar _ al inicio/fin
+    .replace(/[^\w\s.\-]/g, '_')                       // solo word chars, espacios, punto, guión
+    .replace(/\s+/g, ' ')                              // colapsar múltiples espacios
+    .trim();
 }
 
 function buildPublicId(originalName, mimetype) {
