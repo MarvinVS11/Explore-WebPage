@@ -145,7 +145,7 @@ router.get('/view', async (req, res) => {
   if (!match) return res.status(400).json({ error: 'URL de Cloudinary no reconocida' });
 
   const resourceType = match[1];
-  const publicId     = match[2];
+  const publicId     = decodeURIComponent(match[2]); // maneja espacios como %20
 
   const signedUrl = cloudinary.url(publicId, {
     resource_type: resourceType,
