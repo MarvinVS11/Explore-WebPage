@@ -3,8 +3,8 @@ const auth       = require('../middleware/auth');
 const upload     = require('../config/multer');
 const cloudinary = require('../config/cloudinary');
 
-// GET /upload/view — sin auth: redirige a URL firmada de Cloudinary para preview en nueva pestaña
-router.get('/view', async (req, res) => {
+// GET /upload/view — sin auth: proxy del archivo para preview inline en nueva pestaña
+router.get('/view', (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: 'Falta el parámetro url' });
 
@@ -14,17 +14,32 @@ router.get('/view', async (req, res) => {
   const resourceType = match[1];
   const publicId     = decodeURIComponent(match[2]);
 
+  let downloadUrl;
   try {
-    const signedUrl = cloudinary.url(publicId, {
+    downloadUrl = cloudinary.utils.private_download_url(publicId, null, {
       resource_type: resourceType,
-      type:          'upload',
-      sign_url:      true,
-      secure:        true,
+      attachment:    false,
     });
-    res.redirect(302, signedUrl);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
+
+  const https = require('https');
+  https.get(downloadUrl, (upstream) => {
+    if (upstream.statusCode !== 200) {
+      res.status(upstream.statusCode || 502).json({ error: `Error Cloudinary: ${upstream.statusCode}` });
+      upstream.resume();
+      return;
+    }
+    res.set('Content-Type',        'application/pdf');
+    res.set('Content-Disposition', 'inline');
+    res.set('Cache-Control',       'no-store');
+    const cl = upstream.headers['content-length'];
+    if (cl) res.set('Content-Length', cl);
+    upstream.pipe(res);
+  }).on('error', (err) => {
+    if (!res.headersSent) res.status(502).json({ error: err.message });
+  });
 });
 
 router.use(auth);
