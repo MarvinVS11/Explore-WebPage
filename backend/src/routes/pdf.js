@@ -31,7 +31,8 @@ router.get('/', (req, res) => {
   const parts = parseCloudinaryUrl(url);
   if (!parts) return res.status(400).json({ error: 'URL de Cloudinary no reconocida' });
 
-  const { resourceType, publicId } = parts;
+  const resourceType = parts.resourceType;
+  const publicId     = decodeURIComponent(parts.publicId); // maneja espacios como %20
 
   // Generate a signed delivery URL so Cloudinary accepts the request
   const signedUrl = cloudinary.url(publicId, {
