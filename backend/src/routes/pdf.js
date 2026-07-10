@@ -17,9 +17,7 @@ router.get('/', (req, res) => {
   if (!url) return res.status(400).json({ error: 'Falta el parámetro url' });
 
   let parsed;
-  try {
-    parsed = new URL(url);
-  } catch {
+  try { parsed = new URL(url); } catch {
     return res.status(400).json({ error: 'URL inválida' });
   }
 
@@ -33,23 +31,23 @@ router.get('/', (req, res) => {
   const resourceType = parts.resourceType;
   const publicId     = decodeURIComponent(parts.publicId);
 
-  let signedUrl;
+  let downloadUrl;
   try {
-    signedUrl = cloudinary.url(publicId, {
+    // private_download_url usa la API de Cloudinary con credenciales,
+    // evitando los problemas de Auth Token en la CDN de entrega
+    downloadUrl = cloudinary.utils.private_download_url(publicId, null, {
       resource_type: resourceType,
-      type:          'upload',
-      sign_url:      true,
-      secure:        true,
+      attachment:    false,
     });
   } catch (err) {
-    console.error('[pdf proxy] Error generando URL firmada:', err.message);
-    return res.status(500).json({ error: 'Error generando URL firmada: ' + err.message });
+    console.error('[pdf proxy] Error generando URL de descarga:', err.message);
+    return res.status(500).json({ error: 'Error generando URL: ' + err.message });
   }
 
-  https.get(signedUrl, (upstream) => {
+  https.get(downloadUrl, (upstream) => {
     const status = upstream.statusCode;
     if (status !== 200) {
-      console.error('[pdf proxy] Cloudinary respondió:', status, 'para', signedUrl);
+      console.error('[pdf proxy] Cloudinary respondió:', status);
       res.status(status || 502).json({ error: `Error al obtener el archivo: ${status}` });
       upstream.resume();
       return;
