@@ -4,7 +4,6 @@ const cloudinary = require('../config/cloudinary');
 
 const ALLOWED_HOST = 'res.cloudinary.com';
 
-// Parse a Cloudinary delivery URL into { resourceType, publicId }
 function parseCloudinaryUrl(url) {
   const match = url.match(
     /res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/
@@ -32,19 +31,25 @@ router.get('/', (req, res) => {
   if (!parts) return res.status(400).json({ error: 'URL de Cloudinary no reconocida' });
 
   const resourceType = parts.resourceType;
-  const publicId     = decodeURIComponent(parts.publicId); // maneja espacios como %20
+  const publicId     = decodeURIComponent(parts.publicId);
 
-  // Generate a signed delivery URL so Cloudinary accepts the request
-  const signedUrl = cloudinary.url(publicId, {
-    resource_type: resourceType,
-    type:          'upload',
-    sign_url:      true,
-    secure:        true,
-  });
+  let signedUrl;
+  try {
+    signedUrl = cloudinary.url(publicId, {
+      resource_type: resourceType,
+      type:          'upload',
+      sign_url:      true,
+      secure:        true,
+    });
+  } catch (err) {
+    console.error('[pdf proxy] Error generando URL firmada:', err.message);
+    return res.status(500).json({ error: 'Error generando URL firmada: ' + err.message });
+  }
 
   https.get(signedUrl, (upstream) => {
     const status = upstream.statusCode;
     if (status !== 200) {
+      console.error('[pdf proxy] Cloudinary respondió:', status, 'para', signedUrl);
       res.status(status || 502).json({ error: `Error al obtener el archivo: ${status}` });
       upstream.resume();
       return;
@@ -59,6 +64,7 @@ router.get('/', (req, res) => {
 
     upstream.pipe(res);
   }).on('error', (err) => {
+    console.error('[pdf proxy] Error fetch:', err.message);
     if (!res.headersSent) res.status(502).json({ error: err.message });
   });
 });

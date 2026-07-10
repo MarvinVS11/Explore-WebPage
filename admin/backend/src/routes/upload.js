@@ -3,6 +3,30 @@ const auth       = require('../middleware/auth');
 const upload     = require('../config/multer');
 const cloudinary = require('../config/cloudinary');
 
+// GET /upload/view — sin auth: redirige a URL firmada de Cloudinary para preview en nueva pestaña
+router.get('/view', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'Falta el parámetro url' });
+
+  const match = url.match(/res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/);
+  if (!match) return res.status(400).json({ error: 'URL de Cloudinary no reconocida' });
+
+  const resourceType = match[1];
+  const publicId     = decodeURIComponent(match[2]);
+
+  try {
+    const signedUrl = cloudinary.url(publicId, {
+      resource_type: resourceType,
+      type:          'upload',
+      sign_url:      true,
+      secure:        true,
+    });
+    res.redirect(302, signedUrl);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.use(auth);
 
 function sanitizeName(str) {
@@ -134,27 +158,6 @@ router.post('/sign', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-// GET /upload/view?url=<cloudinary_url> — redirige a URL firmada para preview
-router.get('/view', async (req, res) => {
-  const { url } = req.query;
-  if (!url) return res.status(400).json({ error: 'Falta el parámetro url' });
-
-  const match = url.match(/res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?(.+)$/);
-  if (!match) return res.status(400).json({ error: 'URL de Cloudinary no reconocida' });
-
-  const resourceType = match[1];
-  const publicId     = decodeURIComponent(match[2]); // maneja espacios como %20
-
-  const signedUrl = cloudinary.url(publicId, {
-    resource_type: resourceType,
-    type:          'upload',
-    sign_url:      true,
-    secure:        true,
-  });
-
-  res.redirect(302, signedUrl);
 });
 
 // DELETE /upload/:publicId(*) — elimina de Cloudinary
