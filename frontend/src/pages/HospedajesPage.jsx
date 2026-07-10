@@ -4,8 +4,14 @@ import { getHospedajes, getSection, getImages, getImageUrl } from '../api';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-function pdfProxyUrl(url) {
-  return `${API_BASE}/api/pdf?url=${encodeURIComponent(url)}`;
+function getLinkUrl(url) {
+  if (!url) return '#';
+  // GridFS: se sirve directo desde el backend público con Content-Type correcto
+  if (url.startsWith('/api/files/')) return `${API_BASE}${url}`;
+  // PDF en Cloudinary (archivos viejos): pasa por el proxy
+  if (url.toLowerCase().endsWith('.pdf')) return `${API_BASE}/api/pdf?url=${encodeURIComponent(url)}`;
+  // Imagen u otro archivo
+  return url;
 }
 
 function PinIcon() {
@@ -103,9 +109,7 @@ export default function HospedajesPage() {
                 )}
                 {h.linkUrl && (
                   <a
-                    href={h.linkUrl.toLowerCase().endsWith('.pdf')
-                      ? pdfProxyUrl(h.linkUrl)
-                      : h.linkUrl}
+                    href={getLinkUrl(h.linkUrl)}
                     target="_blank"
                     rel="noreferrer"
                     className="hospedaje-link-btn"

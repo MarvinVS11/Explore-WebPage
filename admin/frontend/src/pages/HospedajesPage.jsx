@@ -1,14 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { getHospedajes, createHospedaje, updateHospedaje, deleteHospedaje, uploadFile } from '../api';
+import { getHospedajes, createHospedaje, updateHospedaje, deleteHospedaje, uploadFile, uploadDocumento } from '../api';
 import { useToast } from '../context/ToastContext.jsx';
 
 const ADMIN_API = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:5001';
-const pdfViewUrl = (url) => `${ADMIN_API}/upload/view?url=${encodeURIComponent(url)}`;
+
+// PDFs se sirven desde el backend admin via GridFS (sin problemas de auth)
+const filePreviewUrl = (url) => {
+  if (!url) return '#';
+  if (url.startsWith('/api/files/')) return `${ADMIN_API}${url}`;
+  return url;
+};
 
 const EMPTY = { title: '', description: '', imageUrl: '', mapsUrl: '', linkUrl: '', order: 0, isVisible: true };
 
 function isPdf(url) {
-  return url && url.toLowerCase().includes('.pdf');
+  return url && (url.startsWith('/api/files/') || url.toLowerCase().includes('.pdf'));
 }
 
 export default function HospedajesPage() {
@@ -61,8 +67,15 @@ export default function HospedajesPage() {
     if (!file) return;
     setUploadingFile(true);
     try {
-      const { url } = await uploadFile(file, 'hospedajes');
-      setForm(f => ({ ...f, linkUrl: url }));
+      if (file.type === 'application/pdf') {
+        // PDFs → GridFS (evita problemas de autenticación de Cloudinary)
+        const data = await uploadDocumento(file);
+        setForm(f => ({ ...f, linkUrl: data.url }));
+      } else {
+        // Imágenes → Cloudinary
+        const { url } = await uploadFile(file, 'hospedajes');
+        setForm(f => ({ ...f, linkUrl: url }));
+      }
       toast('Archivo subido correctamente', 'success');
     } catch (err) { toast(err.message, 'error'); }
     finally { setUploadingFile(false); e.target.value = ''; }
@@ -173,7 +186,7 @@ export default function HospedajesPage() {
                     : <img src={form.linkUrl} alt="preview" style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: 4 }} onError={e => { e.target.style.display = 'none'; }} />
                   }
                   <a
-                    href={isPdf(form.linkUrl) ? pdfViewUrl(form.linkUrl) : form.linkUrl}
+                    href={filePreviewUrl(form.linkUrl)}
                     target="_blank" rel="noreferrer"
                     style={{ fontSize: 12, color: 'var(--primary)', wordBreak: 'break-all', flex: 1 }}>
                     {isPdf(form.linkUrl) ? 'PDF cargado — clic para ver' : 'Imagen cargada — clic para ver'}
@@ -246,7 +259,7 @@ export default function HospedajesPage() {
                 <p style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
                   {isPdf(item.linkUrl) ? '📄' : '🖼️'}
                   <a
-                    href={isPdf(item.linkUrl) ? pdfViewUrl(item.linkUrl) : item.linkUrl}
+                    href={filePreviewUrl(item.linkUrl)}
                     target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>
                     {isPdf(item.linkUrl) ? 'Ver PDF' : 'Ver archivo'}
                   </a>
