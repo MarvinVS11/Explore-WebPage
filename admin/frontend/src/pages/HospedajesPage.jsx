@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { getHospedajes, createHospedaje, updateHospedaje, deleteHospedaje, uploadFile } from '../api';
 import { useToast } from '../context/ToastContext.jsx';
 
+const ADMIN_API = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:5001';
+const pdfViewUrl = (url) => `${ADMIN_API}/upload/view?url=${encodeURIComponent(url)}`;
+
 const EMPTY = { title: '', description: '', imageUrl: '', mapsUrl: '', linkUrl: '', order: 0, isVisible: true };
 
 function isPdf(url) {
@@ -58,7 +61,7 @@ export default function HospedajesPage() {
     if (!file) return;
     setUploadingFile(true);
     try {
-      const { url } = await uploadFile(file, 'image');
+      const { url } = await uploadFile(file, 'hospedajes');
       setForm(f => ({ ...f, linkUrl: url }));
       toast('Archivo subido correctamente', 'success');
     } catch (err) { toast(err.message, 'error'); }
@@ -169,7 +172,9 @@ export default function HospedajesPage() {
                     ? <span style={{ fontSize: 24 }}>📄</span>
                     : <img src={form.linkUrl} alt="preview" style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: 4 }} onError={e => { e.target.style.display = 'none'; }} />
                   }
-                  <a href={form.linkUrl} target="_blank" rel="noreferrer"
+                  <a
+                    href={isPdf(form.linkUrl) ? pdfViewUrl(form.linkUrl) : form.linkUrl}
+                    target="_blank" rel="noreferrer"
                     style={{ fontSize: 12, color: 'var(--primary)', wordBreak: 'break-all', flex: 1 }}>
                     {isPdf(form.linkUrl) ? 'PDF cargado — clic para ver' : 'Imagen cargada — clic para ver'}
                   </a>
@@ -240,7 +245,9 @@ export default function HospedajesPage() {
               {item.linkUrl && (
                 <p style={{ fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
                   {isPdf(item.linkUrl) ? '📄' : '🖼️'}
-                  <a href={item.linkUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>
+                  <a
+                    href={isPdf(item.linkUrl) ? pdfViewUrl(item.linkUrl) : item.linkUrl}
+                    target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>
                     {isPdf(item.linkUrl) ? 'Ver PDF' : 'Ver archivo'}
                   </a>
                 </p>
