@@ -14,7 +14,7 @@ export default function LoginPage() {
       navigate('/sections');
     }
   };
-
+  
   return (
     <div className="login-page">
       <div className="login-card">

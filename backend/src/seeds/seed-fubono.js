@@ -120,7 +120,7 @@ const navLinks = [
   { siteId: SITE_ID, label: 'Nosotros',    href: '#nosotros',    order: 2, isActive: true },
   { siteId: SITE_ID, label: 'Servicios',   href: '#servicios',   order: 3, isActive: true },
   { siteId: SITE_ID, label: 'Galería',     href: '#galeria',     order: 4, isActive: true },
-  { siteId: SITE_ID, label: 'Nuestra Red', href: '#proyectos',  order: 5, isActive: true },
+  { siteId: SITE_ID, label: 'Nuestra Red', href: '#redturismo',  order: 5, isActive: true },
   { siteId: SITE_ID, label: 'Mapa',        href: '#turisteando', order: 6, isActive: true },
   { siteId: SITE_ID, label: 'Contacto',    href: '#contacto',    order: 7, isActive: true },
 ];
